@@ -1,0 +1,40 @@
+---
+import '../styles/global.css';
+import { NAV_ITEMS, SITE } from '../consts';
+import { seo } from '../lib/seo';
+
+type Props = {
+  title?: string;
+  description?: string;
+  path?: string;
+};
+
+const meta = seo(Astro.props);
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{meta.title}</title>
+    <meta name="description" content={meta.description} />
+    <link rel="canonical" href={meta.canonical} />
+    <link rel="icon" href="/favicon.svg" />
+    <meta property="og:title" content={meta.title} />
+    <meta property="og:description" content={meta.description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={meta.canonical} />
+  </head>
+  <body>
+    <header class="shell" style="padding: 18px 0; display: flex; align-items: center; justify-content: space-between;">
+      <a class="mono" href="/" aria-label={SITE.title} style="color: var(--green); font-size: 14px;">LUX.OS</a>
+      <nav aria-label="Main navigation" style="display: flex; gap: 14px; flex-wrap: wrap;">
+        {NAV_ITEMS.map((item) => <a class="mono" href={item.href} style="color: var(--muted); font-size: 12px;">{item.label}</a>)}
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>

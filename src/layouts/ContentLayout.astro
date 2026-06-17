@@ -1,0 +1,31 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import { formatDate } from '../lib/dates';
+
+type Props = {
+  title: string;
+  description?: string;
+  date?: Date;
+  tags?: string[];
+  path?: string;
+};
+---
+
+<BaseLayout title={Astro.props.title} description={Astro.props.description} path={Astro.props.path}>
+  <article class="shell" style="padding: 56px 0 96px;">
+    <header style="max-width: 760px; margin-bottom: 36px;">
+      <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 14px;">CONTENT SIGNAL</p>
+      <h1 style="font-size: clamp(2.2rem, 7vw, 5.5rem); line-height: 0.96; letter-spacing: 0; margin: 0;">{Astro.props.title}</h1>
+      {Astro.props.description && <p style="color: var(--muted); font-size: 1.1rem;">{Astro.props.description}</p>}
+      {Astro.props.date && <p class="mono" style="color: var(--warm); font-size: 12px;">{formatDate(Astro.props.date)}</p>}
+      {Astro.props.tags && (
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          {Astro.props.tags.map((tag) => <span class="mono" style="border: 1px solid var(--line); border-radius: 999px; padding: 4px 8px; color: var(--muted); font-size: 12px;">#{tag}</span>)}
+        </div>
+      )}
+    </header>
+    <div class="prose">
+      <slot />
+    </div>
+  </article>
+</BaseLayout>
