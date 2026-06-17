@@ -1,14 +1,86 @@
 ---
-const title = 'Lux Personal OS';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ModuleLauncher from '../components/ModuleLauncher.astro';
+import SignalGraph from '../components/SignalGraph.astro';
+import LifeStrip from '../components/LifeStrip.astro';
+import LabTile from '../components/LabTile.astro';
+import CommandPalette from '../components/CommandPalette.astro';
+import { publishedNewestFirst } from '../lib/content';
+
+const posts = publishedNewestFirst(await getCollection('posts')).slice(0, 1);
+const notes = publishedNewestFirst(await getCollection('notes')).slice(0, 1);
+const life = publishedNewestFirst(await getCollection('life')).slice(0, 1);
+const lab = publishedNewestFirst(await getCollection('lab')).slice(0, 1);
+const latest = [...posts, ...notes, ...life, ...lab];
 ---
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title>{title}</title>
-    <link rel="icon" href="/favicon.svg" />
-  </head>
-  <body>
-    <h1>{title}</h1>
-  </body>
-</html>
+
+<BaseLayout title="Lux Personal OS" description="A personal operating system for writing, life, notes, and experiments.">
+  <CommandPalette />
+  <section class="shell" style="padding: 48px 0 96px;">
+    <div class="hero-grid">
+      <div class="panel" style="padding: clamp(20px, 4vw, 42px); min-height: 320px;">
+        <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 20px;">LUX.OS // ACTIVE SESSION // PRESS CMD+K</p>
+        <h1 class="hero-title">A personal command center for thinking, making, and living.</h1>
+        <p style="color: var(--muted); max-width: 680px; font-size: 1.1rem; margin-top: 24px;">Writing, life signals, digital garden notes, and small experiments in one living interface.</p>
+      </div>
+      <div class="sidebar">
+        <SignalGraph />
+        <LabTile />
+      </div>
+    </div>
+
+    <div class="module-grid">
+      <ModuleLauncher />
+      <LifeStrip />
+    </div>
+
+    <section class="panel" style="padding: 16px; margin-top: 16px;">
+      <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 12px;">LATEST SIGNALS</p>
+      <div style="display: grid; gap: 10px;">
+        {latest.map((entry) => (
+          <a href={`/${entry.collection === 'posts' ? 'blog' : entry.collection}/${entry.slug}`} class="panel" style="padding: 14px; background: var(--surface-2);">
+            <span class="mono" style="color: var(--muted); font-size: 12px;">{entry.collection}</span>
+            <strong style="display: block; margin-top: 4px;">{entry.data.title}</strong>
+          </a>
+        ))}
+      </div>
+    </section>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr);
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .sidebar {
+    display: grid;
+    gap: 16px;
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 7vw, 5.5rem);
+    line-height: 0.92;
+    letter-spacing: 0;
+    margin: 0;
+    max-width: 900px;
+  }
+
+  .module-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, .6fr);
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .hero-grid,
+    .module-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
