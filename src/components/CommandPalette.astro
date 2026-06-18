@@ -1,11 +1,18 @@
 <div id="command-palette" hidden>
-  <div style="position: fixed; inset: 0; background: rgba(0,0,0,.64); z-index: 20;"></div>
-  <div class="panel" style="position: fixed; z-index: 21; top: 12vh; left: 50%; transform: translateX(-50%); width: min(560px, calc(100vw - 32px)); padding: 14px;">
-    <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 10px;">COMMAND PALETTE</p>
-    <a href="/blog">Go to Blog</a><br />
-    <a href="/life">Go to Life</a><br />
-    <a href="/notes">Go to Notes</a><br />
-    <a href="/lab">Go to Lab</a>
+  <div class="palette-scrim"></div>
+  <div class="ink-panel palette-window">
+    <div class="palette-top">
+      <p class="mono">COMMAND CENTER</p>
+      <span class="mono">ESC</span>
+    </div>
+    <div class="palette-input mono">lux.os / jump to module</div>
+    <div class="palette-links">
+      <a href="/blog"><span class="mono">01</span><strong>Blog</strong><em>Long-form thinking</em></a>
+      <a href="/life"><span class="mono">02</span><strong>Life</strong><em>Places, fragments, moods</em></a>
+      <a href="/notes"><span class="mono">03</span><strong>Notes</strong><em>Garden seeds</em></a>
+      <a href="/lab"><span class="mono">04</span><strong>Lab</strong><em>Small tools and demos</em></a>
+      <a href="/search"><span class="mono">05</span><strong>Search</strong><em>Find any signal</em></a>
+    </div>
   </div>
 </div>
 
@@ -21,3 +28,96 @@
     }
   });
 </script>
+
+<style>
+  .palette-scrim {
+    position: fixed;
+    inset: 0;
+    background: oklch(27% 0.03 72 / 0.18);
+    z-index: 20;
+  }
+
+  .palette-window {
+    position: fixed;
+    z-index: 21;
+    top: 12vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(640px, calc(100vw - 32px));
+    padding: 14px;
+  }
+
+  .palette-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .palette-top p {
+    color: var(--green);
+    font-size: 12px;
+    margin: 0;
+  }
+
+  .palette-top span {
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 11px;
+    padding: 4px 7px;
+  }
+
+  .palette-input {
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 13px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+
+  .palette-links {
+    display: grid;
+    gap: 8px;
+  }
+
+  .palette-links a {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 0.7fr) minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--paper);
+    padding: 12px;
+  }
+
+  .palette-links a:hover {
+    border-color: var(--line-strong);
+    background: var(--surface);
+  }
+
+  .palette-links span {
+    color: var(--warm);
+    font-size: 12px;
+  }
+
+  .palette-links em {
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-style: normal;
+  }
+
+  @media (max-width: 620px) {
+    .palette-links a {
+      grid-template-columns: 32px minmax(0, 1fr);
+    }
+
+    .palette-links em {
+      grid-column: 2;
+    }
+  }
+</style>

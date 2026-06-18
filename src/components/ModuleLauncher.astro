@@ -7,14 +7,53 @@ const modules = [
 ];
 ---
 
-<section class="panel" style="padding: 16px;">
-  <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 12px;">MODULES</p>
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
+<section class="ink-panel module-panel">
+  <p class="mono">MODULES</p>
+  <div class="module-grid-inner">
     {modules.map((module) => (
-      <a href={module.href} class="panel" style="display: block; padding: 14px; background: var(--surface-2);">
+      <a href={module.href} class="module-link">
         <strong>{module.label}</strong>
-        <p class="mono" style="color: var(--muted); margin: 8px 0 0; font-size: 12px;">{module.detail}</p>
+        <span class="mono">{module.detail}</span>
       </a>
     ))}
   </div>
 </section>
+
+<style>
+  .module-panel {
+    padding: 16px;
+  }
+
+  .module-panel > p {
+    color: var(--green);
+    font-size: 12px;
+    margin: 0 0 12px;
+  }
+
+  .module-grid-inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+
+  .module-link {
+    display: block;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 14px;
+  }
+
+  .module-link:hover {
+    border-color: var(--line-strong);
+    box-shadow: 4px 4px 0 var(--line-strong);
+    transform: translate(-2px, -2px);
+  }
+
+  .module-link span {
+    color: var(--muted);
+    display: block;
+    margin: 8px 0 0;
+    font-size: 12px;
+  }
+</style>

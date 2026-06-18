@@ -1,13 +1,59 @@
-<section class="panel" style="padding: 16px; min-height: 200px; position: relative; overflow: hidden;">
-  <p class="mono" style="color: var(--green); font-size: 12px; margin: 0;">SIGNAL GRAPH</p>
-  <div aria-hidden="true" style="position: absolute; inset: 40px 16px 24px;">
-    <span style="position: absolute; left: 10%; top: 28%; width: 10px; height: 10px; border-radius: 50%; background: var(--green); box-shadow: 0 0 24px var(--green);"></span>
-    <span style="position: absolute; left: 42%; top: 14%; width: 10px; height: 10px; border-radius: 50%; background: var(--warm); box-shadow: 0 0 24px var(--warm);"></span>
-    <span style="position: absolute; left: 72%; top: 48%; width: 10px; height: 10px; border-radius: 50%; background: var(--blue); box-shadow: 0 0 24px var(--blue);"></span>
-    <span style="position: absolute; left: 30%; top: 70%; width: 10px; height: 10px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 24px var(--cyan);"></span>
+<section class="ink-panel signal-graph">
+  <p class="mono">SIGNAL GRAPH</p>
+  <div aria-hidden="true" class="graph-field">
+    <span style="left: 10%; top: 28%; background: var(--green);"></span>
+    <span style="left: 42%; top: 14%; background: var(--warm);"></span>
+    <span style="left: 72%; top: 48%; background: var(--blue);"></span>
+    <span style="left: 30%; top: 70%; background: var(--cyan);"></span>
     <svg width="100%" height="100%" viewBox="0 0 400 180" preserveAspectRatio="none">
-      <path d="M45 65 L170 30 L300 92 L120 130" fill="none" stroke="#334155" stroke-width="2" />
+      <path d="M45 65 L170 30 L300 92 L120 130" fill="none" stroke="currentColor" stroke-width="2" />
     </svg>
   </div>
-  <p style="position: absolute; left: 16px; right: 16px; bottom: 16px; color: var(--muted); margin: 0; font-size: 0.85rem;">A living map of writing, life, notes, and experiments.</p>
+  <p>A living map of writing, life, notes, and experiments.</p>
 </section>
+
+<style>
+  .signal-graph {
+    padding: 16px;
+    min-height: 210px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .signal-graph > p:first-child {
+    color: var(--green);
+    font-size: 12px;
+    margin: 0;
+  }
+
+  .graph-field {
+    position: absolute;
+    inset: 42px 16px 34px;
+    color: var(--line-strong);
+    background:
+      linear-gradient(90deg, transparent 0 31px, var(--line) 31px 32px, transparent 32px),
+      linear-gradient(0deg, transparent 0 31px, var(--line) 31px 32px, transparent 32px);
+    background-size: 32px 32px;
+    border-radius: 8px;
+    opacity: 0.72;
+  }
+
+  .graph-field span {
+    position: absolute;
+    width: 11px;
+    height: 11px;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    box-shadow: 0 0 0 5px var(--paper);
+  }
+
+  .signal-graph > p:last-child {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 14px;
+    color: var(--muted);
+    margin: 0;
+    font-size: 0.85rem;
+  }
+</style>

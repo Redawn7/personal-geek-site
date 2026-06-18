@@ -17,12 +17,22 @@ const latest = [...posts, ...notes, ...life, ...lab];
 
 <BaseLayout title="Lux Personal OS" description="A personal operating system for writing, life, notes, and experiments.">
   <CommandPalette />
-  <section class="shell" style="padding: 48px 0 96px;">
+  <section class="shell home-shell">
     <div class="hero-grid">
-      <div class="panel" style="padding: clamp(20px, 4vw, 42px); min-height: 320px;">
-        <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 20px;">LUX.OS // ACTIVE SESSION // PRESS CMD+K</p>
+      <div class="ink-panel hero-console">
+        <div class="status-row">
+          <span class="mono signal-pill">ACTIVE SESSION</span>
+          <span class="mono">PRESS CMD+K</span>
+          <span class="mono">LIGHT MODE / PAPER CONSOLE</span>
+        </div>
         <h1 class="hero-title">A personal command center for thinking, making, and living.</h1>
-        <p style="color: var(--muted); max-width: 680px; font-size: 1.1rem; margin-top: 24px;">Writing, life signals, digital garden notes, and small experiments in one living interface.</p>
+        <p class="hero-copy">Writing, life signals, digital garden notes, and small experiments in one living interface.</p>
+        <div class="console-strip mono" aria-label="System counters">
+          <span>{posts.length} latest essay</span>
+          <span>{notes.length} active note</span>
+          <span>{life.length} life signal</span>
+          <span>{lab.length} lab build</span>
+        </div>
       </div>
       <div class="sidebar">
         <SignalGraph />
@@ -35,13 +45,16 @@ const latest = [...posts, ...notes, ...life, ...lab];
       <LifeStrip />
     </div>
 
-    <section class="panel" style="padding: 16px; margin-top: 16px;">
-      <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 12px;">LATEST SIGNALS</p>
-      <div style="display: grid; gap: 10px;">
+    <section class="ink-panel latest-panel">
+      <div class="section-head">
+        <p class="mono">LATEST SIGNALS</p>
+        <a class="mono" href="/archive">OPEN ARCHIVE</a>
+      </div>
+      <div class="latest-grid">
         {latest.map((entry) => (
-          <a href={`/${entry.collection === 'posts' ? 'blog' : entry.collection}/${entry.slug}`} class="panel" style="padding: 14px; background: var(--surface-2);">
-            <span class="mono" style="color: var(--muted); font-size: 12px;">{entry.collection}</span>
-            <strong style="display: block; margin-top: 4px;">{entry.data.title}</strong>
+          <a href={`/${entry.collection === 'posts' ? 'blog' : entry.collection}/${entry.slug}`} class="signal-card">
+            <span class="mono">{entry.collection}</span>
+            <strong>{entry.data.title}</strong>
           </a>
         ))}
       </div>
@@ -50,11 +63,51 @@ const latest = [...posts, ...notes, ...life, ...lab];
 </BaseLayout>
 
 <style>
+  .home-shell {
+    padding: 42px 0 96px;
+  }
+
   .hero-grid {
     display: grid;
     grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr);
     gap: 16px;
     align-items: stretch;
+  }
+
+  .hero-console {
+    min-height: 360px;
+    padding: clamp(22px, 4vw, 46px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-console::after {
+    content: "";
+    position: absolute;
+    inset: auto -10% -22% 36%;
+    height: 190px;
+    background:
+      linear-gradient(90deg, transparent 0 18px, oklch(74% 0.05 79 / 0.32) 18px 19px, transparent 19px 36px),
+      linear-gradient(0deg, transparent 0 18px, oklch(74% 0.05 79 / 0.32) 18px 19px, transparent 19px 36px);
+    opacity: 0.8;
+    transform: rotate(-4deg);
+  }
+
+  .status-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 24px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .status-row > span:not(.signal-pill) {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    padding: 6px 10px;
   }
 
   .sidebar {
@@ -68,6 +121,34 @@ const latest = [...posts, ...notes, ...life, ...lab];
     letter-spacing: 0;
     margin: 0;
     max-width: 900px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-copy {
+    color: var(--muted);
+    max-width: 680px;
+    font-size: 1.1rem;
+    line-height: 1.65;
+    margin-top: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .console-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 34px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .console-strip span {
+    border-top: 1px solid var(--line-strong);
+    color: var(--muted);
+    font-size: 11px;
+    padding-top: 9px;
   }
 
   .module-grid {
@@ -77,9 +158,69 @@ const latest = [...posts, ...notes, ...life, ...lab];
     margin-top: 16px;
   }
 
+  .latest-panel {
+    padding: 16px;
+    margin-top: 16px;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .section-head p,
+  .section-head a {
+    color: var(--muted);
+    font-size: 12px;
+    margin: 0;
+  }
+
+  .section-head p {
+    color: var(--green);
+  }
+
+  .latest-grid {
+    display: grid;
+    gap: 10px;
+  }
+
+  .signal-card {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 14px;
+  }
+
+  .signal-card:hover {
+    border-color: var(--line-strong);
+    box-shadow: 5px 5px 0 var(--line-strong);
+    transform: translate(-2px, -2px);
+  }
+
+  .signal-card span {
+    color: var(--warm);
+    font-size: 12px;
+  }
+
+  .signal-card strong {
+    display: block;
+  }
+
   @media (max-width: 768px) {
     .hero-grid,
     .module-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .console-strip,
+    .signal-card {
       grid-template-columns: 1fr;
     }
   }

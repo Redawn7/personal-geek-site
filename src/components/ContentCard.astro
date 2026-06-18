@@ -12,9 +12,9 @@ type Props = {
 const { href, title, date, description, label } = Astro.props;
 ---
 
-<a href={href} class="panel" style="display: block; padding: 16px; transition: border-color 0.15s;">
+<a href={href} class="panel content-card">
   <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-    {label && <span class="mono" style="color: var(--cyan); font-size: 11px;">{label}</span>}
+    {label && <span class="mono" style="color: var(--warm); font-size: 11px;">{label}</span>}
     <span class="mono" style="color: var(--muted); font-size: 11px;">{formatDate(date)}</span>
   </div>
   <strong style="font-size: 1.05rem;">{title}</strong>
@@ -22,7 +22,18 @@ const { href, title, date, description, label } = Astro.props;
 </a>
 
 <style>
-  a.panel:hover {
-    border-color: var(--cyan);
+  .content-card {
+    display: block;
+    padding: 16px;
+    transition:
+      border-color 0.15s,
+      box-shadow 0.15s,
+      transform 0.15s;
+  }
+
+  .content-card:hover {
+    border-color: var(--line-strong);
+    box-shadow: 4px 4px 0 var(--line-strong);
+    transform: translate(-2px, -2px);
   }
 </style>

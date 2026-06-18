@@ -27,10 +27,10 @@ const meta = seo(Astro.props);
     <meta property="og:url" content={meta.canonical} />
   </head>
   <body>
-    <header class="shell" style="padding: 18px 0; display: flex; align-items: center; justify-content: space-between;">
-      <a class="mono" href="/" aria-label={SITE.title} style="color: var(--green); font-size: 14px;">LUX.OS</a>
-      <nav aria-label="Main navigation" style="display: flex; gap: 14px; flex-wrap: wrap;">
-        {NAV_ITEMS.map((item) => <a class="mono" href={item.href} style="color: var(--muted); font-size: 12px;">{item.label}</a>)}
+    <header class="shell site-header">
+      <a class="brand mono" href="/" aria-label={SITE.title}>LUX.OS</a>
+      <nav aria-label="Main navigation" class="nav-grid">
+        {NAV_ITEMS.map((item) => <a class="mono" href={item.href}>{item.label}</a>)}
       </nav>
     </header>
     <main>
@@ -38,3 +38,57 @@ const meta = seo(Astro.props);
     </main>
   </body>
 </html>
+
+<style>
+  .site-header {
+    padding: 18px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .brand {
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    padding: 8px 12px;
+    background: var(--paper);
+    box-shadow: 4px 4px 0 var(--line-strong);
+  }
+
+  .nav-grid {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .nav-grid a {
+    color: var(--muted);
+    font-size: 12px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    padding: 7px 9px;
+  }
+
+  .nav-grid a:hover {
+    color: var(--text);
+    border-color: var(--line);
+    background: var(--paper);
+  }
+
+  @media (max-width: 720px) {
+    .site-header {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+
+    .nav-grid {
+      justify-content: flex-start;
+    }
+  }
+</style>
