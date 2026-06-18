@@ -28,6 +28,7 @@ const notes = defineCollection({
     date: z.date(),
     tags: z.array(z.string()).default([]),
     status: z.enum(['seed', 'growing', 'evergreen']).default('seed'),
+    description: z.string().optional(),
     source: z.string().optional(),
     links: z.array(z.string()).default([]),
     draft: z.boolean().default(false)
@@ -40,6 +41,7 @@ const life = defineCollection({
     title: z.string(),
     date: z.date(),
     type: z.enum(['photo', 'place', 'fragment', 'recap']),
+    description: z.string().optional(),
     draft: z.boolean().default(false),
     location: z.string().optional(),
     weather: z.string().optional(),
@@ -61,6 +63,7 @@ const lab = defineCollection({
     title: z.string(),
     date: z.date(),
     status: z.enum(['idea', 'building', 'shipped', 'archived']).default('idea'),
+    description: z.string().optional(),
     tags: z.array(z.string()).default([]),
     repo: z.string().url().optional(),
     demo: z.string().url().optional(),
