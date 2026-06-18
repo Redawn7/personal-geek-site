@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Now" description="What I'm doing right now." path="/now">
+  <section class="shell" style="padding: 48px 0 96px;">
+    <div style="max-width: 760px;">
+      <p class="mono" style="color: var(--warm); font-size: 12px; margin: 0 0 14px;">NOW</p>
+      <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); line-height: 0.96; margin: 0 0 24px;">Now</h1>
+
+      <div class="prose">
+        <p>This is my <strong>/now</strong> page — inspired by <a href="https://nownownow.com">nownownow.com</a>.</p>
+        <p>What I'm currently focused on:</p>
+        <ul>
+          <li>Building and maintaining this Personal OS site.</li>
+          <li>Exploring new tools and frameworks for the web.</li>
+          <li>Writing and capturing ideas in the digital garden.</li>
+        </ul>
+        <p>Last updated: June 2026.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

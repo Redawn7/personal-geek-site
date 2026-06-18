@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="About" description="About Lux Personal OS." path="/about">
+  <section class="shell" style="padding: 48px 0 96px;">
+    <div style="max-width: 760px;">
+      <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 14px;">ABOUT</p>
+      <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); line-height: 0.96; margin: 0 0 24px;">About</h1>
+
+      <div class="prose">
+        <p>
+          This is my <strong>Personal OS</strong> — a living interface for thinking, making, and documenting life.
+        </p>
+        <p>
+          It's built with Astro and designed to feel like a desktop environment where each module is a window into a different part of my world: writing, notes, life fragments, and experiments.
+        </p>
+
+        <h2>Modules</h2>
+        <ul>
+          <li><strong>Blog</strong> — Long-form signals, essays, and technical writing.</li>
+          <li><strong>Notes</strong> — A digital garden of growing ideas, links, and seeds.</li>
+          <li><strong>Life</strong> — Photos, places, and fragments from everyday life.</li>
+          <li><strong>Lab</strong> — Tools, demos, and side experiments.</li>
+        </ul>
+
+        <h2>Colophon</h2>
+        <p>
+          Powered by Astro, styled with a custom dark theme using CSS variables and Tailwind. Typography is Inter. Monospace accents use the system mono stack. The design language draws from terminal aesthetics and minimal desktop environments.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

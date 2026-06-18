@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ContentCard from '../../components/ContentCard.astro';
+import { publishedNewestFirst } from '../../lib/content';
+
+const posts = publishedNewestFirst(await getCollection('posts'));
+---
+
+<BaseLayout title="Blog" description="Long-form signals, writing, and essays." path="/blog">
+  <section class="shell" style="padding: 48px 0 96px;">
+    <div style="margin-bottom: 24px;">
+      <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 8px;">MODULE // BLOG</p>
+      <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); line-height: 0.96; margin: 0;">Blog</h1>
+      <p style="color: var(--muted); margin: 12px 0 0; font-size: 1rem;">{posts.length} signal{posts.length !== 1 ? 's' : ''}</p>
+    </div>
+    <div style="display: grid; gap: 12px; max-width: 760px;">
+      {posts.map((entry) => (
+        <ContentCard
+          href={`/blog/${entry.slug}`}
+          title={entry.data.title}
+          date={entry.data.date}
+          description={entry.data.description}
+        />
+      ))}
+      {posts.length === 0 && (
+        <p class="mono" style="color: var(--muted); font-size: 12px;">NO SIGNALS YET</p>
+      )}
+    </div>
+  </section>
+</BaseLayout>

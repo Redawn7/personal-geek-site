@@ -1,0 +1,58 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContentCard from '../components/ContentCard.astro';
+import { publishedNewestFirst } from '../lib/content';
+
+const posts = publishedNewestFirst(await getCollection('posts'));
+const notes = publishedNewestFirst(await getCollection('notes'));
+const life = publishedNewestFirst(await getCollection('life'));
+const lab = publishedNewestFirst(await getCollection('lab'));
+
+const all = [...posts, ...notes, ...life, ...lab].sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+---
+
+<BaseLayout title="Archive" description="All published signals, newest first." path="/archive">
+  <section class="shell" style="padding: 48px 0 96px;">
+    <div style="margin-bottom: 24px;">
+      <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 8px;">ARCHIVE</p>
+      <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); line-height: 0.96; margin: 0;">Archive</h1>
+      <p style="color: var(--muted); margin: 12px 0 0; font-size: 1rem;">{all.length} signal{all.length !== 1 ? 's' : ''}</p>
+    </div>
+    <div style="display: grid; gap: 12px; max-width: 760px;">
+      {all.map((entry) => {
+        const prefix = entry.collection === 'posts' ? 'blog' : entry.collection;
+        const label = entry.collection === 'posts'
+          ? 'blog'
+          : entry.collection === 'notes'
+            ? entry.data.status ?? 'note'
+            : entry.collection === 'life'
+              ? entry.data.type
+              : entry.data.status ?? 'lab';
+
+        const desc = entry.collection === 'posts'
+          ? entry.data.description
+          : entry.collection === 'life'
+            ? entry.data.location
+            : entry.collection === 'lab' && entry.data.stack.length > 0
+              ? entry.data.stack.join(', ')
+              : undefined;
+
+        return (
+          <ContentCard
+            href={`/${prefix}/${entry.slug}`}
+            title={entry.data.title}
+            date={entry.data.date}
+            label={label}
+            description={desc}
+          />
+        );
+      })}
+      {all.length === 0 && (
+        <p class="mono" style="color: var(--muted); font-size: 12px;">NO SIGNALS YET</p>
+      )}
+    </div>
+  </section>
+</BaseLayout>

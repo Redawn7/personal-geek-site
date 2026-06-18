@@ -1,0 +1,32 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ContentCard from '../../components/ContentCard.astro';
+import { publishedNewestFirst } from '../../lib/content';
+
+const life = publishedNewestFirst(await getCollection('life'));
+---
+
+<BaseLayout title="Life" description="Photos, places, and fragments." path="/life">
+  <section class="shell" style="padding: 48px 0 96px;">
+    <div style="margin-bottom: 24px;">
+      <p class="mono" style="color: var(--warm); font-size: 12px; margin: 0 0 8px;">MODULE // LIFE</p>
+      <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); line-height: 0.96; margin: 0;">Life</h1>
+      <p style="color: var(--muted); margin: 12px 0 0; font-size: 1rem;">{life.length} fragment{life.length !== 1 ? 's' : ''}</p>
+    </div>
+    <div style="display: grid; gap: 12px; max-width: 760px;">
+      {life.map((entry) => (
+        <ContentCard
+          href={`/life/${entry.slug}`}
+          title={entry.data.title}
+          date={entry.data.date}
+          label={entry.data.type}
+          description={entry.data.location}
+        />
+      ))}
+      {life.length === 0 && (
+        <p class="mono" style="color: var(--muted); font-size: 12px;">NO FRAGMENTS YET</p>
+      )}
+    </div>
+  </section>
+</BaseLayout>

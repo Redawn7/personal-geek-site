@@ -1,0 +1,28 @@
+---
+import { formatDate } from '../lib/dates';
+
+type Props = {
+  href: string;
+  title: string;
+  date: Date;
+  description?: string;
+  label?: string;
+};
+
+const { href, title, date, description, label } = Astro.props;
+---
+
+<a href={href} class="panel" style="display: block; padding: 16px; transition: border-color 0.15s;">
+  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+    {label && <span class="mono" style="color: var(--cyan); font-size: 11px;">{label}</span>}
+    <span class="mono" style="color: var(--muted); font-size: 11px;">{formatDate(date)}</span>
+  </div>
+  <strong style="font-size: 1.05rem;">{title}</strong>
+  {description && <p style="color: var(--muted); margin: 6px 0 0; font-size: 0.9rem; line-height: 1.5;">{description}</p>}
+</a>
+
+<style>
+  a.panel:hover {
+    border-color: var(--cyan);
+  }
+</style>

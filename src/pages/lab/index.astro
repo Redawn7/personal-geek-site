@@ -1,0 +1,32 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ContentCard from '../../components/ContentCard.astro';
+import { publishedNewestFirst } from '../../lib/content';
+
+const lab = publishedNewestFirst(await getCollection('lab'));
+---
+
+<BaseLayout title="Lab" description="Tools, demos, and experiments." path="/lab">
+  <section class="shell" style="padding: 48px 0 96px;">
+    <div style="margin-bottom: 24px;">
+      <p class="mono" style="color: var(--blue); font-size: 12px; margin: 0 0 8px;">MODULE // LAB</p>
+      <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); line-height: 0.96; margin: 0;">Lab</h1>
+      <p style="color: var(--muted); margin: 12px 0 0; font-size: 1rem;">{lab.length} experiment{lab.length !== 1 ? 's' : ''}</p>
+    </div>
+    <div style="display: grid; gap: 12px; max-width: 760px;">
+      {lab.map((entry) => (
+        <ContentCard
+          href={`/lab/${entry.slug}`}
+          title={entry.data.title}
+          date={entry.data.date}
+          label={entry.data.status}
+          description={entry.data.stack.length > 0 ? entry.data.stack.join(', ') : undefined}
+        />
+      ))}
+      {lab.length === 0 && (
+        <p class="mono" style="color: var(--muted); font-size: 12px;">NO EXPERIMENTS YET</p>
+      )}
+    </div>
+  </section>
+</BaseLayout>

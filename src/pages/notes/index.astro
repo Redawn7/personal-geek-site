@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ContentCard from '../../components/ContentCard.astro';
+import { publishedNewestFirst } from '../../lib/content';
+
+const notes = publishedNewestFirst(await getCollection('notes'));
+---
+
+<BaseLayout title="Notes" description="A digital garden of growing ideas." path="/notes">
+  <section class="shell" style="padding: 48px 0 96px;">
+    <div style="margin-bottom: 24px;">
+      <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 8px;">MODULE // NOTES</p>
+      <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); line-height: 0.96; margin: 0;">Notes</h1>
+      <p style="color: var(--muted); margin: 12px 0 0; font-size: 1rem;">{notes.length} note{notes.length !== 1 ? 's' : ''}</p>
+    </div>
+    <div style="display: grid; gap: 12px; max-width: 760px;">
+      {notes.map((entry) => (
+        <ContentCard
+          href={`/notes/${entry.slug}`}
+          title={entry.data.title}
+          date={entry.data.date}
+          label={entry.data.status}
+        />
+      ))}
+      {notes.length === 0 && (
+        <p class="mono" style="color: var(--muted); font-size: 12px;">NO NOTES YET</p>
+      )}
+    </div>
+  </section>
+</BaseLayout>
