@@ -1,0 +1,22 @@
+---
+import { getCollection, render } from 'astro:content';
+import ContentLayout from '../../layouts/ContentLayout.astro';
+import { isPublished } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('life');
+  return entries
+    .filter(isPublished)
+    .map((entry) => ({
+      params: { slug: entry.slug },
+      props: { entry },
+    }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<ContentLayout title={entry.data.title} date={entry.data.date} tags={entry.data.tags} path={`/life/${entry.slug}`}>
+  <Content />
+</ContentLayout>
