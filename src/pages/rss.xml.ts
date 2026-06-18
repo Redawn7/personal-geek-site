@@ -1,0 +1,24 @@
+import rss from '@astrojs/rss';
+import { getCollection } from 'astro:content';
+import { SITE } from '../consts';
+import { isPublished } from '../lib/content';
+
+export async function GET(context: { site: URL }) {
+  const posts = (await getCollection('posts'))
+    .filter(isPublished)
+    .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+  return rss({
+    title: SITE.title,
+    description: SITE.description,
+    site: context.site,
+    items: posts.map((post) => ({
+      title: post.data.title,
+      description: post.data.description,
+      pubDate: post.data.date,
+      link: `/blog/${post.slug}/`,
+      categories: post.data.tags,
+    })),
+    customData: `<language>zh-CN</language>`,
+  });
+}
