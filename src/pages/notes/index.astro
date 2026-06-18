@@ -7,12 +7,12 @@ import { publishedNewestFirst } from '../../lib/content';
 const notes = publishedNewestFirst(await getCollection('notes'));
 ---
 
-<BaseLayout title="Notes" description="A digital garden of growing ideas." path="/notes">
+<BaseLayout title="Notes" description="Short notes and ideas that are still growing. 慢慢长大的想法。" path="/notes">
   <section class="shell" style="padding: 48px 0 96px;">
     <div style="margin-bottom: 24px;">
-      <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 8px;">MODULE // NOTES</p>
+      <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 8px;">ROOM // NOTES 笔记</p>
       <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); line-height: 0.96; margin: 0;">Notes</h1>
-      <p style="color: var(--muted); margin: 12px 0 0; font-size: 1rem;">{notes.length} note{notes.length !== 1 ? 's' : ''}</p>
+      <p style="color: var(--muted); margin: 12px 0 0; font-size: 1rem;">{notes.length} note{notes.length !== 1 ? 's' : ''}. Small ideas before they become essays.</p>
     </div>
     <div style="display: grid; gap: 12px; max-width: 760px;">
       {notes.map((entry) => (
@@ -24,7 +24,7 @@ const notes = publishedNewestFirst(await getCollection('notes'));
         />
       ))}
       {notes.length === 0 && (
-        <p class="mono" style="color: var(--muted); font-size: 12px;">NO NOTES YET</p>
+        <p class="mono" style="color: var(--muted); font-size: 12px;">NO NOTES YET / 还没有笔记</p>
       )}
     </div>
   </section>

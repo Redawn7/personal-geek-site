@@ -1,14 +1,14 @@
 ---
 const modules = [
-  { href: '/blog', label: 'Blog', detail: 'Long-form signals' },
-  { href: '/life', label: 'Life', detail: 'Photos and fragments' },
-  { href: '/notes', label: 'Notes', detail: 'Garden seeds' },
-  { href: '/lab', label: 'Lab', detail: 'Tools and demos' }
+  { href: '/blog', label: 'Blog 写作', detail: 'Essays and thoughts' },
+  { href: '/life', label: 'Life 生活', detail: 'Daily memories' },
+  { href: '/notes', label: 'Notes 笔记', detail: 'Growing ideas' },
+  { href: '/lab', label: 'Lab 实验', detail: 'Tools and demos' }
 ];
 ---
 
 <section class="ink-panel module-panel">
-  <p class="mono">MODULES</p>
+  <p class="mono">ROOMS / 房间</p>
   <div class="module-grid-inner">
     {modules.map((module) => (
       <a href={module.href} class="module-link">

@@ -7,12 +7,12 @@ import { publishedNewestFirst } from '../../lib/content';
 const lab = publishedNewestFirst(await getCollection('lab'));
 ---
 
-<BaseLayout title="Lab" description="Tools, demos, and experiments." path="/lab">
+<BaseLayout title="Lab" description="Small tools, demos, and experiments. 小工具和小实验。" path="/lab">
   <section class="shell" style="padding: 48px 0 96px;">
     <div style="margin-bottom: 24px;">
-      <p class="mono" style="color: var(--blue); font-size: 12px; margin: 0 0 8px;">MODULE // LAB</p>
+      <p class="mono" style="color: var(--blue); font-size: 12px; margin: 0 0 8px;">ROOM // LAB 实验</p>
       <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); line-height: 0.96; margin: 0;">Lab</h1>
-      <p style="color: var(--muted); margin: 12px 0 0; font-size: 1rem;">{lab.length} experiment{lab.length !== 1 ? 's' : ''}</p>
+      <p style="color: var(--muted); margin: 12px 0 0; font-size: 1rem;">{lab.length} experiment{lab.length !== 1 ? 's' : ''}. Things I try, build, and learn from.</p>
     </div>
     <div style="display: grid; gap: 12px; max-width: 760px;">
       {lab.map((entry) => (
@@ -25,7 +25,7 @@ const lab = publishedNewestFirst(await getCollection('lab'));
         />
       ))}
       {lab.length === 0 && (
-        <p class="mono" style="color: var(--muted); font-size: 12px;">NO EXPERIMENTS YET</p>
+        <p class="mono" style="color: var(--muted); font-size: 12px;">NO EXPERIMENTS YET / 还没有实验</p>
       )}
     </div>
   </section>

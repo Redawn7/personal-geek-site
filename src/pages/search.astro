@@ -2,12 +2,12 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="Search" description="Search across all published content." path="/search">
+<BaseLayout title="Search" description="Search all posts, notes, life notes, and projects. 搜索全站。" path="/search">
   <section class="shell" style="padding: 48px 0 96px;">
     <div style="margin-bottom: 24px;">
-      <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 8px;">SEARCH</p>
+      <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 8px;">SEARCH / 搜索</p>
       <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); line-height: 0.96; margin: 0;">Search</h1>
-      <p style="color: var(--muted); margin: 12px 0 0; font-size: 1rem;">Find signals across blog, notes, life, and lab.</p>
+      <p style="color: var(--muted); margin: 12px 0 0; font-size: 1rem;">Find anything across Blog, Notes, Life, and Lab.</p>
     </div>
     <div id="pagefind-search" role="search" aria-label="Search content" style="max-width: 760px;"></div>
   </section>
@@ -27,7 +27,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       });
     };
     s.onerror = function () {
-      el.innerHTML = '<p class="mono" style="color: var(--muted); font-size: 12px;">Search is unavailable in preview mode. Try the production build.</p>';
+      el.innerHTML = '<p class="mono" style="color: var(--muted); font-size: 12px;">Search is not ready in preview mode. Try the live site.</p>';
     };
     document.head.appendChild(s);
   });

@@ -6,17 +6,17 @@ import { publishedNewestFirst } from '../../lib/content';
 const life = publishedNewestFirst(await getCollection('life'));
 ---
 
-<BaseLayout title="Life" description="Photos, places, and fragments." path="/life">
+<BaseLayout title="Life" description="Daily memories, places, and moods. 生活记录。" path="/life">
   <section class="shell life-shell">
     <div class="life-hero ink-panel">
       <div>
-        <p class="mono">MODULE // LIFE</p>
-        <h1>Life Signals</h1>
-        <p>Small fragments with enough metadata to become memory: place, weather, mood, and the texture of a day.</p>
+        <p class="mono">ROOM // LIFE 生活</p>
+        <h1>Life Notes</h1>
+        <p>Small memories from daily life: place, weather, mood, and a few quiet words. 记录普通日子里的小片段。</p>
       </div>
       <div class="life-counter mono">
         <strong>{life.length}</strong>
-        <span>fragment{life.length !== 1 ? 's' : ''}</span>
+        <span>life note{life.length !== 1 ? 's' : ''}</span>
       </div>
     </div>
 
@@ -39,7 +39,7 @@ const life = publishedNewestFirst(await getCollection('life'));
         </a>
       ))}
       {life.length === 0 && (
-        <p class="mono empty-life">NO FRAGMENTS YET</p>
+        <p class="mono empty-life">NO LIFE NOTES YET / 还没有生活记录</p>
       )}
     </div>
   </section>

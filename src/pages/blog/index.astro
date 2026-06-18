@@ -7,12 +7,12 @@ import { publishedNewestFirst } from '../../lib/content';
 const posts = publishedNewestFirst(await getCollection('posts'));
 ---
 
-<BaseLayout title="Blog" description="Long-form signals, writing, and essays." path="/blog">
+<BaseLayout title="Blog" description="Essays, notes, and longer thoughts. 写长一点的想法。" path="/blog">
   <section class="shell" style="padding: 48px 0 96px;">
     <div style="margin-bottom: 24px;">
-      <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 8px;">MODULE // BLOG</p>
+      <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 8px;">ROOM // BLOG 写作</p>
       <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); line-height: 0.96; margin: 0;">Blog</h1>
-      <p style="color: var(--muted); margin: 12px 0 0; font-size: 1rem;">{posts.length} signal{posts.length !== 1 ? 's' : ''}</p>
+      <p style="color: var(--muted); margin: 12px 0 0; font-size: 1rem;">{posts.length} post{posts.length !== 1 ? 's' : ''}. Longer thoughts, written slowly.</p>
     </div>
     <div style="display: grid; gap: 12px; max-width: 760px;">
       {posts.map((entry) => (
@@ -24,7 +24,7 @@ const posts = publishedNewestFirst(await getCollection('posts'));
         />
       ))}
       {posts.length === 0 && (
-        <p class="mono" style="color: var(--muted); font-size: 12px;">NO SIGNALS YET</p>
+        <p class="mono" style="color: var(--muted); font-size: 12px;">NO POSTS YET / 还没有文章</p>
       )}
     </div>
   </section>

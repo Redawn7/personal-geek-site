@@ -2,12 +2,12 @@
 const items = [
   { label: 'Shanghai', tone: 'var(--warm)' },
   { label: 'Reading', tone: 'var(--green)' },
-  { label: 'Building', tone: 'var(--cyan)' }
+  { label: 'Making', tone: 'var(--cyan)' }
 ];
 ---
 
 <section class="ink-panel life-strip">
-  <p class="mono">LIFE STRIP</p>
+  <p class="mono">LIFE STRIP / 生活切片</p>
   <div>
     {items.map((item) => (
       <div style={`--tone: ${item.tone};`}>

@@ -15,23 +15,23 @@ const lab = publishedNewestFirst(await getCollection('lab')).slice(0, 1);
 const latest = [...posts, ...notes, ...life, ...lab];
 ---
 
-<BaseLayout title="Lux Personal OS" description="A personal operating system for writing, life, notes, and experiments.">
+<BaseLayout title="Lux Personal OS" description="A simple personal site for writing, life, notes, and small projects. 记录生活，也记录想法。">
   <CommandPalette />
   <section class="shell home-shell">
     <div class="hero-grid">
       <div class="ink-panel hero-console">
         <div class="status-row">
-          <span class="mono signal-pill">ACTIVE SESSION</span>
+          <span class="mono signal-pill">TODAY'S DESK</span>
           <span class="mono">PRESS CMD+K</span>
-          <span class="mono">LIGHT MODE / PAPER CONSOLE</span>
+          <span class="mono">WARM LIGHT MODE</span>
         </div>
-        <h1 class="hero-title">A personal command center for thinking, making, and living.</h1>
-        <p class="hero-copy">Writing, life signals, digital garden notes, and small experiments in one living interface.</p>
+        <h1 class="hero-title">My place to write, build, and remember.</h1>
+        <p class="hero-copy">I keep essays, life notes, ideas, and small projects here. 这里记录生活，也记录好奇心。</p>
         <div class="console-strip mono" aria-label="System counters">
-          <span>{posts.length} latest essay</span>
-          <span>{notes.length} active note</span>
-          <span>{life.length} life signal</span>
-          <span>{lab.length} lab build</span>
+          <span>{posts.length} latest post</span>
+          <span>{notes.length} open note</span>
+          <span>{life.length} life note</span>
+          <span>{lab.length} small build</span>
         </div>
       </div>
       <div class="sidebar">
@@ -47,8 +47,8 @@ const latest = [...posts, ...notes, ...life, ...lab];
 
     <section class="ink-panel latest-panel">
       <div class="section-head">
-        <p class="mono">LATEST SIGNALS</p>
-        <a class="mono" href="/archive">OPEN ARCHIVE</a>
+        <p class="mono">LATEST UPDATES / 最近更新</p>
+        <a class="mono" href="/archive">ALL POSTS</a>
       </div>
       <div class="latest-grid">
         {latest.map((entry) => (
