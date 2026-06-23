@@ -82,3 +82,18 @@ describe('selectLifePostcards', () => {
     expect(selectLifePostcards(entries).map((entry) => entry.slug)).toEqual(['4', '3', '2']);
   });
 });
+
+describe('projectAction', () => {
+  it('prefers demo, then repository, then local write-up', async () => {
+    const home = await import('../src/lib/home');
+    expect(home).toHaveProperty('projectAction');
+    const projectAction = home.projectAction as (project: {
+      slug: string;
+      data: { demo?: string; repo?: string; writeup?: boolean };
+    }) => { href: string; label: string };
+
+    expect(projectAction({ slug: 'x', data: { demo: 'https://demo.test', repo: 'https://repo.test', writeup: true } })).toEqual({ href: 'https://demo.test', label: 'OPEN DEMO' });
+    expect(projectAction({ slug: 'x', data: { repo: 'https://repo.test', writeup: true } })).toEqual({ href: 'https://repo.test', label: 'VIEW REPO' });
+    expect(projectAction({ slug: 'x', data: { writeup: true } })).toEqual({ href: '/lab/x', label: 'READ THE BUILD NOTE' });
+  });
+});

@@ -3,16 +3,23 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ModuleLauncher from '../components/ModuleLauncher.astro';
 import SignalGraph from '../components/SignalGraph.astro';
-import LifeStrip from '../components/LifeStrip.astro';
-import LabTile from '../components/LabTile.astro';
 import CommandPalette from '../components/CommandPalette.astro';
+import NowDashboard from '../components/NowDashboard.astro';
+import LifePostcards from '../components/LifePostcards.astro';
+import FeaturedProject from '../components/FeaturedProject.astro';
 import { publishedNewestFirst } from '../lib/content';
+import { selectFeaturedProject, selectLifePostcards } from '../lib/home';
 
-const posts = publishedNewestFirst(await getCollection('posts')).slice(0, 1);
-const notes = publishedNewestFirst(await getCollection('notes')).slice(0, 1);
-const life = publishedNewestFirst(await getCollection('life')).slice(0, 1);
-const lab = publishedNewestFirst(await getCollection('lab')).slice(0, 1);
-const latest = [...posts, ...notes, ...life, ...lab];
+const allPosts = publishedNewestFirst(await getCollection('posts'));
+const allNotes = publishedNewestFirst(await getCollection('notes'));
+const allLife = await getCollection('life');
+const allLab = await getCollection('lab');
+const posts = allPosts.slice(0, 1);
+const notes = allNotes.slice(0, 1);
+const life = selectLifePostcards(allLife);
+const featuredProject = selectFeaturedProject(allLab);
+const [nowEntry] = await getCollection('now');
+const latest = [...posts, ...notes, ...life.slice(0, 1), ...(featuredProject ? [featuredProject] : [])];
 ---
 
 <BaseLayout title="Lux Personal OS" description="A simple personal site for writing, life, notes, and small projects. 记录生活，也记录想法。">
@@ -28,21 +35,26 @@ const latest = [...posts, ...notes, ...life, ...lab];
         <h1 class="hero-title">My place to write, build, and remember.</h1>
         <p class="hero-copy">I keep essays, life notes, ideas, and small projects here. 这里记录生活，也记录好奇心。</p>
         <div class="console-strip mono" aria-label="System counters">
-          <span>{posts.length} latest post</span>
-          <span>{notes.length} open note</span>
-          <span>{life.length} life note</span>
-          <span>{lab.length} small build</span>
+          <span>{allPosts.length} published post</span>
+          <span>{allNotes.length} open note</span>
+          <span>{life.length} life postcard</span>
+          <span>{allLab.length} small build</span>
         </div>
-      </div>
-      <div class="sidebar">
-        <SignalGraph />
-        <LabTile />
       </div>
     </div>
 
+    {nowEntry ? (
+      <NowDashboard {...nowEntry.data} />
+    ) : (
+      <section class="ink-panel now-empty mono">Status update in progress / 近况整理中</section>
+    )}
+
+    <LifePostcards entries={life} />
+    <FeaturedProject project={featuredProject} />
+
     <div class="module-grid">
       <ModuleLauncher />
-      <LifeStrip />
+      <SignalGraph />
     </div>
 
     <section class="ink-panel latest-panel">
@@ -69,9 +81,7 @@ const latest = [...posts, ...notes, ...life, ...lab];
 
   .hero-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr);
-    gap: 16px;
-    align-items: stretch;
+    grid-template-columns: 1fr;
   }
 
   .hero-console {
@@ -108,11 +118,6 @@ const latest = [...posts, ...notes, ...life, ...lab];
     border-radius: 999px;
     background: var(--surface);
     padding: 6px 10px;
-  }
-
-  .sidebar {
-    display: grid;
-    gap: 16px;
   }
 
   .hero-title {
@@ -156,6 +161,16 @@ const latest = [...posts, ...notes, ...life, ...lab];
     grid-template-columns: minmax(0, 1fr) minmax(260px, .6fr);
     gap: 16px;
     margin-top: 16px;
+  }
+
+  .now-empty,
+  :global(.now-dashboard) {
+    margin-top: 16px;
+  }
+
+  .now-empty {
+    color: var(--muted);
+    padding: 22px;
   }
 
   .latest-panel {

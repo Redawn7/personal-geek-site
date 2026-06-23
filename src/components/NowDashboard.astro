@@ -1,0 +1,48 @@
+---
+import { formatDate } from '../lib/dates';
+
+type Props = {
+  updated: Date;
+  making: string;
+  reading: string;
+  thinking: string;
+};
+
+const { updated, making, reading, thinking } = Astro.props;
+const rows = [
+  { label: 'MAKING / 在做', value: making },
+  { label: 'READING / 在读', value: reading },
+  { label: 'THINKING / 在想', value: thinking }
+];
+---
+
+<section class="ink-panel now-dashboard" aria-labelledby="now-dashboard-title">
+  <div class="now-head">
+    <div>
+      <p class="mono">NOW / 近况</p>
+      <h2 id="now-dashboard-title">What is happening now?</h2>
+    </div>
+    <time class="mono" datetime={updated.toISOString()}>Updated {formatDate(updated)}</time>
+  </div>
+  <div class="now-rows">
+    {rows.map((row) => (
+      <div class="now-row">
+        <span class="mono">{row.label}</span>
+        <strong>{row.value}</strong>
+      </div>
+    ))}
+  </div>
+  <a class="mono now-link" href="/now">READ THE FULL UPDATE</a>
+</section>
+
+<style>
+  .now-dashboard { padding: clamp(18px, 3vw, 28px); }
+  .now-head { display: flex; justify-content: space-between; gap: 20px; align-items: start; }
+  .now-head p, .now-head time { color: var(--warm); font-size: 11px; margin: 0; }
+  .now-head h2 { font-size: clamp(1.5rem, 3vw, 2.4rem); margin: 8px 0 0; }
+  .now-rows { display: grid; margin-top: 24px; }
+  .now-row { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; border-top: 1px solid var(--line); padding: 14px 0; }
+  .now-row span { color: var(--muted); font-size: 11px; }
+  .now-link { color: var(--blue); display: inline-block; font-size: 11px; margin-top: 10px; }
+  @media (max-width: 620px) { .now-head, .now-row { grid-template-columns: 1fr; display: grid; } }
+</style>

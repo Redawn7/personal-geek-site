@@ -1,0 +1,50 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { mediaUrl } from '../lib/media';
+import { projectAction } from '../lib/home';
+
+type Props = { project?: CollectionEntry<'lab'> };
+const { project } = Astro.props;
+const action = project ? projectAction(project) : undefined;
+---
+
+<section class="featured-project" aria-labelledby="featured-project-title">
+  <div class="project-copy">
+    <p class="mono">FEATURED PROJECT / 精选项目</p>
+    {project ? (
+      <>
+        <span class="project-status mono">{project.data.status}</span>
+        <h2 id="featured-project-title">{project.data.title}</h2>
+        <p>{project.data.description ?? 'A small project built to learn something useful.'}</p>
+        <div class="project-stack mono">{project.data.stack.map((item) => <span>{item}</span>)}</div>
+        {action && <a class="project-action mono" href={action.href}>{action.label}</a>}
+      </>
+    ) : (
+      <>
+        <h2 id="featured-project-title">Next build loading.</h2>
+        <p>A new experiment will appear here soon. 新项目正在准备中。</p>
+        <a class="project-action mono" href="/lab">OPEN LAB</a>
+      </>
+    )}
+  </div>
+  <div class="project-media">
+    {project?.data.screenshot ? <img src={mediaUrl(project.data.screenshot)} alt={`${project.data.title} screenshot`} loading="lazy" /> : (
+      <div class="project-blueprint mono" aria-hidden="true">BUILD / TEST / LEARN</div>
+    )}
+  </div>
+</section>
+
+<style>
+  .featured-project { display: grid; grid-template-columns: minmax(0, .8fr) minmax(300px, 1.2fr); gap: clamp(24px, 5vw, 72px); align-items: center; border-block: 1px solid var(--line-strong); margin-top: 56px; padding: clamp(30px, 6vw, 70px) 0; }
+  .project-copy > p:first-child { color: var(--cyan); font-size: 11px; }
+  .project-status { color: var(--warm); font-size: 11px; text-transform: uppercase; }
+  .project-copy h2 { font-size: clamp(2rem, 5vw, 4.4rem); line-height: .94; margin: 12px 0; }
+  .project-copy > p:not(:first-child) { color: var(--muted); line-height: 1.65; }
+  .project-stack { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
+  .project-stack span { border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 10px; padding: 5px 8px; }
+  .project-action { color: var(--blue); display: inline-block; font-size: 11px; margin-top: 22px; }
+  .project-media { aspect-ratio: 16 / 10; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--surface); overflow: hidden; }
+  .project-media img { width: 100%; height: 100%; object-fit: cover; }
+  .project-blueprint { display: grid; place-items: center; width: 100%; height: 100%; color: var(--muted); background: linear-gradient(90deg, transparent 31px, var(--line) 32px), linear-gradient(transparent 31px, var(--line) 32px); background-size: 32px 32px; }
+  @media (max-width: 760px) { .featured-project { grid-template-columns: 1fr; } }
+</style>
