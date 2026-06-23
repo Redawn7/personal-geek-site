@@ -20,6 +20,24 @@
   --shadow: 0 18px 50px oklch(34% 0.04 72 / 0.12);
 }
 
+html[data-theme="terminal"] {
+  color-scheme: dark;
+  --bg: #090b0f;
+  --paper: #10141d;
+  --surface: #151b26;
+  --surface-2: #1b2330;
+  --line: #273040;
+  --line-strong: #60708a;
+  --text: #f3f0e8;
+  --muted: #9ca8ba;
+  --cyan: #7dd3fc;
+  --blue: #89a8ff;
+  --green: #75e3b3;
+  --warm: #f6c177;
+  --danger: #f97066;
+  --shadow: 0 18px 54px rgb(0 0 0 / 0.34);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -37,6 +55,14 @@ body {
     radial-gradient(circle at 18% 8%, oklch(91% 0.11 82 / 0.54), transparent 320px),
     radial-gradient(circle at 84% 14%, oklch(86% 0.08 193 / 0.22), transparent 300px),
     linear-gradient(180deg, oklch(99% 0.018 95 / 0.92), transparent 520px),
+    var(--bg);
+}
+
+html[data-theme="terminal"] body {
+  background:
+    radial-gradient(circle at 18% 8%, rgb(117 227 179 / 0.1), transparent 340px),
+    radial-gradient(circle at 84% 14%, rgb(125 211 252 / 0.09), transparent 320px),
+    linear-gradient(180deg, rgb(137 168 255 / 0.08), transparent 520px),
     var(--bg);
 }
 

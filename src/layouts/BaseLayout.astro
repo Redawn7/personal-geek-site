@@ -25,19 +25,63 @@ const meta = seo(Astro.props);
     <meta property="og:description" content={meta.description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={meta.canonical} />
+    <script is:inline>
+      try {
+        var savedTheme = localStorage.getItem('lux-theme');
+        document.documentElement.dataset.theme = savedTheme === 'terminal' ? 'terminal' : 'paper';
+      } catch (_) {
+        document.documentElement.dataset.theme = 'paper';
+      }
+    </script>
   </head>
   <body>
     <header class="shell site-header">
       <a class="brand mono" href="/" aria-label={SITE.title}>LUX.OS</a>
-      <nav aria-label="Main navigation" class="nav-grid">
-        {NAV_ITEMS.map((item) => <a class="mono" href={item.href}>{item.label}</a>)}
-      </nav>
+      <div class="header-tools">
+        <nav aria-label="Main navigation" class="nav-grid">
+          {NAV_ITEMS.map((item) => <a class="mono" href={item.href}>{item.label}</a>)}
+        </nav>
+        <button class="theme-toggle mono" type="button" data-theme-toggle aria-label="Switch color theme" aria-pressed="false" title="Switch between Paper and Terminal themes">
+          <span class="theme-icon" aria-hidden="true">◐</span>
+          <span data-theme-label>Paper</span>
+        </button>
+      </div>
     </header>
     <main>
       <slot />
     </main>
   </body>
 </html>
+
+<script is:inline>
+  var themeButton = document.querySelector('[data-theme-toggle]');
+  var themeLabel = document.querySelector('[data-theme-label]');
+  var themeStatus = document.querySelectorAll('[data-theme-status]');
+
+  function applyTheme(theme, remember) {
+    var nextTheme = theme === 'terminal' ? 'terminal' : 'paper';
+    document.documentElement.dataset.theme = nextTheme;
+
+    if (themeLabel) themeLabel.textContent = nextTheme === 'terminal' ? 'Terminal' : 'Paper';
+    if (themeButton) themeButton.setAttribute('aria-pressed', String(nextTheme === 'terminal'));
+    themeStatus.forEach(function (item) {
+      item.textContent = nextTheme === 'terminal' ? 'TERMINAL MODE' : 'PAPER MODE';
+    });
+
+    if (remember) {
+      try {
+        localStorage.setItem('lux-theme', nextTheme);
+      } catch (_) {}
+    }
+  }
+
+  applyTheme(document.documentElement.dataset.theme, false);
+
+  themeButton?.addEventListener('click', function () {
+    var nextTheme = document.documentElement.dataset.theme === 'terminal' ? 'paper' : 'terminal';
+    applyTheme(nextTheme, true);
+  });
+</script>
 
 <style>
   .site-header {
@@ -67,6 +111,14 @@ const meta = seo(Astro.props);
     justify-content: flex-end;
   }
 
+  .header-tools {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    min-width: 0;
+  }
+
   .nav-grid a {
     color: var(--muted);
     font-size: 12px;
@@ -81,10 +133,49 @@ const meta = seo(Astro.props);
     background: var(--paper);
   }
 
+  .theme-toggle {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 34px;
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--text);
+    padding: 7px 10px;
+    font-size: 11px;
+    cursor: pointer;
+  }
+
+  .theme-toggle:hover {
+    background: var(--surface);
+    box-shadow: 3px 3px 0 var(--line-strong);
+    transform: translate(-1px, -1px);
+  }
+
+  .theme-toggle:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 3px;
+  }
+
+  .theme-icon {
+    color: var(--warm);
+    font-size: 16px;
+    line-height: 1;
+  }
+
   @media (max-width: 720px) {
     .site-header {
       align-items: flex-start;
       flex-direction: column;
+    }
+
+    .header-tools {
+      align-items: flex-start;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      width: 100%;
     }
 
     .nav-grid {
