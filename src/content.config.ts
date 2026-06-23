@@ -1,4 +1,5 @@
 import { defineCollection, z } from 'astro:content';
+import { labSchema, nowSchema } from './content/schemas';
 
 const base = {
   title: z.string(),
@@ -59,19 +60,7 @@ const life = defineCollection({
 
 const lab = defineCollection({
   type: 'content',
-  schema: z.object({
-    title: z.string(),
-    date: z.date(),
-    status: z.enum(['idea', 'building', 'shipped', 'archived']).default('idea'),
-    description: z.string().optional(),
-    tags: z.array(z.string()).default([]),
-    repo: z.string().url().optional(),
-    demo: z.string().url().optional(),
-    stack: z.array(z.string()).default([]),
-    screenshot: z.string().optional(),
-    writeup: z.boolean().default(true),
-    draft: z.boolean().default(false)
-  })
+  schema: labSchema
 });
 
 const books = defineCollection({
@@ -90,10 +79,13 @@ const books = defineCollection({
   })
 });
 
+const now = defineCollection({ type: 'content', schema: nowSchema });
+
 export const collections = {
   posts,
   notes,
   life,
   lab,
-  books
+  books,
+  now
 };
