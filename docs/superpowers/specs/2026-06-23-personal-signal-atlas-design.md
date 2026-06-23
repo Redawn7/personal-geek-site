@@ -40,7 +40,7 @@ The Now module is a compact status board with three fields:
 - **Reading**: one current book, paper, or topic.
 - **Thinking**: one question or idea worth returning to.
 
-Content comes from `src/content/now.mdx`. Frontmatter becomes the structured summary; the MDX body remains available for the full `/now` page. The homepage links to `/now` for detail.
+Content comes from the singleton collection entry `src/content/now/index.mdx`. Frontmatter becomes the structured summary; the MDX body remains available for the full `/now` page. The homepage links to `/now` for detail.
 
 The module shows a visible "updated" date so stale information is honest rather than pretending to be live.
 
@@ -89,7 +89,7 @@ Use motion only for hover/focus feedback. Respect `prefers-reduced-motion`. Pres
 
 ### Now
 
-Define a structured singleton schema for `now.mdx`:
+Define a structured singleton schema for `src/content/now/index.mdx`:
 
 ```yaml
 updated: 2026-06-23
