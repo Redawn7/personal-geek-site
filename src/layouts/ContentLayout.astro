@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import { formatDate } from '../lib/dates';
+import { mediaUrl } from '../lib/media';
 
 type Props = {
   title: string;
@@ -8,6 +9,8 @@ type Props = {
   date?: Date;
   tags?: string[];
   path?: string;
+  image?: string;
+  imageAlt?: string;
 };
 ---
 
@@ -24,8 +27,31 @@ type Props = {
         </div>
       )}
     </header>
+    {Astro.props.image && (
+      <figure class="content-cover">
+        <img src={mediaUrl(Astro.props.image)} alt={Astro.props.imageAlt ?? Astro.props.title} loading="eager" />
+      </figure>
+    )}
     <div class="prose">
       <slot />
     </div>
   </article>
 </BaseLayout>
+
+<style>
+  .content-cover {
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    margin: 0 0 36px;
+    max-width: 940px;
+    overflow: hidden;
+    background: var(--surface);
+  }
+
+  .content-cover img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+</style>

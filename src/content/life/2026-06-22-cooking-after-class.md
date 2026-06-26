@@ -8,7 +8,7 @@ location: "Melbourne"
 weather: "windy"
 tags: ["melbourne", "cooking", "study-life"]
 mood: "settled"
-photos: []
+photos: ["/images/ai/cooking-after-class.jpg"]
 ---
 
 I came home tired and cooked with what was already in the kitchen. The meal was simple, but making it myself turned the evening from unfinished into complete.

@@ -8,7 +8,7 @@ location: "Shanghai"
 weather: "late and humid"
 tags: ["shanghai", "noodles", "night"]
 mood: "content"
-photos: []
+photos: ["/images/ai/late-night-noodles.jpg"]
 ---
 
 After a long day, the bowl arrived warm and uncomplicated. The kitchen was still busy, but at the table there was nothing left to solve for a few minutes.

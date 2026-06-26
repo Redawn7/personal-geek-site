@@ -8,7 +8,7 @@ location: "Shanghai"
 weather: "soft morning"
 tags: ["shanghai", "breakfast", "food"]
 mood: "hungry"
-photos: []
+photos: ["/images/ai/shanghai-breakfast.jpg"]
 ---
 
 Steam rose into the morning air while the street became busier by the minute. A warm breakfast made the whole city feel less hurried for a little while.

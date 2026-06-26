@@ -8,7 +8,7 @@ location: "Tokyo"
 weather: "warm night"
 tags: ["tokyo", "walking", "night"]
 mood: "curious"
-photos: []
+photos: ["/images/ai/tokyo-side-street.jpg"]
 ---
 
 I walked one block beyond the route on my phone. The busy road disappeared, leaving bicycles, small lights, and the sound of someone closing a door for the night.

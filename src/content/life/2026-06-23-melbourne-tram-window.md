@@ -8,7 +8,7 @@ location: "Melbourne"
 weather: "cool and bright"
 tags: ["melbourne", "tram", "morning"]
 mood: "awake"
-photos: []
+photos: ["/images/ai/melbourne-tram-window.jpg"]
 ---
 
 The tram was quiet enough to hear every stop announcement. Outside, wet rails caught the morning light while people opened shops and carried coffee down the street.

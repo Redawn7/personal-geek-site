@@ -8,7 +8,7 @@ location: "Tokyo"
 weather: "clear"
 tags: ["tokyo", "station", "morning"]
 mood: "quiet"
-photos: []
+photos: ["/images/ai/tokyo-first-train.jpg"]
 ---
 
 The signs were bright, the platforms were ready, and the crowd had not fully arrived. For a few minutes, the station felt like a machine waiting calmly to begin.

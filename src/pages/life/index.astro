@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { publishedNewestFirst } from '../../lib/content';
+import { mediaUrl } from '../../lib/media';
 
 const life = publishedNewestFirst(await getCollection('life'));
 ---
@@ -21,23 +22,29 @@ const life = publishedNewestFirst(await getCollection('life'));
     </div>
 
     <div class="life-timeline">
-      {life.map((entry) => (
-        <a href={`/life/${entry.slug}`} class="life-entry ink-panel">
-          <div class="life-entry-meta mono">
-            <span>{entry.data.type}</span>
-            <time datetime={entry.data.date.toISOString()}>{entry.data.date.toLocaleDateString('en', { month: 'short', day: '2-digit', year: 'numeric' })}</time>
-          </div>
-          <div>
-            <h2>{entry.data.title}</h2>
-            <p>{entry.data.description ?? entry.data.location}</p>
-            <div class="life-tags mono">
-              {entry.data.location && <span>{entry.data.location}</span>}
-              {entry.data.weather && <span>{entry.data.weather}</span>}
-              {entry.data.mood && <span>{entry.data.mood}</span>}
+      {life.map((entry) => {
+        const photo = entry.data.photos[0];
+        return (
+          <a href={`/life/${entry.slug}`} class="life-entry ink-panel">
+            <div class="life-thumb" aria-hidden={!photo}>
+              {photo ? <img src={mediaUrl(photo)} alt="" loading="lazy" /> : <span class="mono">{entry.data.type}</span>}
             </div>
-          </div>
-        </a>
-      ))}
+            <div class="life-entry-meta mono">
+              <span>{entry.data.type}</span>
+              <time datetime={entry.data.date.toISOString()}>{entry.data.date.toLocaleDateString('en', { month: 'short', day: '2-digit', year: 'numeric' })}</time>
+            </div>
+            <div>
+              <h2>{entry.data.title}</h2>
+              <p>{entry.data.description ?? entry.data.location}</p>
+              <div class="life-tags mono">
+                {entry.data.location && <span>{entry.data.location}</span>}
+                {entry.data.weather && <span>{entry.data.weather}</span>}
+                {entry.data.mood && <span>{entry.data.mood}</span>}
+              </div>
+            </div>
+          </a>
+        );
+      })}
       {life.length === 0 && (
         <p class="mono empty-life">NO LIFE NOTES YET / 还没有生活记录</p>
       )}
@@ -109,9 +116,29 @@ const life = publishedNewestFirst(await getCollection('life'));
 
   .life-entry {
     display: grid;
-    grid-template-columns: 148px minmax(0, 1fr);
+    grid-template-columns: 156px 128px minmax(0, 1fr);
     gap: 20px;
+    align-items: center;
     padding: 18px;
+  }
+
+  .life-thumb {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--surface-2);
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .life-thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   .life-entry:hover {

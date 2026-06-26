@@ -8,7 +8,7 @@ location: "Snowfield"
 weather: "cold and clear"
 tags: ["skiing", "winter", "learning"]
 mood: "nervous"
-photos: []
+photos: ["/images/ai/before-the-slope.jpg"]
 ---
 
 I stood still for a moment, looking at the space between me and the bottom of the slope. My legs remembered the last fall. I took a breath and pushed away anyway.
