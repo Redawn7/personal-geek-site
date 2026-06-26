@@ -11,20 +11,48 @@ type Props = {
   path?: string;
   image?: string;
   imageAlt?: string;
+  variant?: 'standard' | 'magazine';
+  category?: string;
+  issueNumber?: string;
+  totalItems?: number;
 };
+
+const variant = Astro.props.variant ?? 'standard';
+const isMagazine = variant === 'magazine';
 ---
 
 <BaseLayout title={Astro.props.title} description={Astro.props.description} path={Astro.props.path}>
-  <article class="shell" style="padding: 56px 0 96px;">
-    <header style="max-width: 760px; margin-bottom: 36px;">
-      <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 14px;">READING / 正在阅读</p>
-      <h1 style="font-size: clamp(2.2rem, 7vw, 5.5rem); line-height: 0.96; letter-spacing: 0; margin: 0;">{Astro.props.title}</h1>
-      {Astro.props.description && <p style="color: var(--muted); font-size: 1.1rem;">{Astro.props.description}</p>}
-      {Astro.props.date && <p class="mono" style="color: var(--warm); font-size: 12px;">{formatDate(Astro.props.date)}</p>}
-      {Astro.props.tags && (
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          {Astro.props.tags.map((tag) => <span class="mono" style="border: 1px solid var(--line); border-radius: 999px; padding: 4px 8px; color: var(--muted); font-size: 12px;">#{tag}</span>)}
-        </div>
+  <article class:list={['shell', 'content-shell', { 'magazine-shell': isMagazine }]}>
+    <header class:list={['content-header', { 'magazine-header': isMagazine }]}>
+      {isMagazine ? (
+        <>
+          <div class="magazine-masthead">
+            <p class="mono">FEATURE // BLOG 写作</p>
+            <div class="magazine-rule mono">
+              {Astro.props.issueNumber && <span>NO. {Astro.props.issueNumber}</span>}
+              {Astro.props.category && <span>{Astro.props.category}</span>}
+              {Astro.props.totalItems && <span>{Astro.props.totalItems} essays</span>}
+            </div>
+          </div>
+          <h1>{Astro.props.title}</h1>
+          {Astro.props.description && <p class="content-description">{Astro.props.description}</p>}
+          <div class="magazine-meta mono">
+            {Astro.props.date && <time datetime={Astro.props.date.toISOString()}>{formatDate(Astro.props.date)}</time>}
+            {Astro.props.tags?.map((tag) => <span>#{tag}</span>)}
+          </div>
+        </>
+      ) : (
+        <>
+          <p class="mono standard-kicker">READING / 正在阅读</p>
+          <h1>{Astro.props.title}</h1>
+          {Astro.props.description && <p class="content-description">{Astro.props.description}</p>}
+          {Astro.props.date && <p class="mono standard-date">{formatDate(Astro.props.date)}</p>}
+          {Astro.props.tags && (
+            <div class="content-tags">
+              {Astro.props.tags.map((tag) => <span class="mono">#{tag}</span>)}
+            </div>
+          )}
+        </>
       )}
     </header>
     {Astro.props.image && (
@@ -32,13 +60,147 @@ type Props = {
         <img src={mediaUrl(Astro.props.image)} alt={Astro.props.imageAlt ?? Astro.props.title} loading="eager" />
       </figure>
     )}
-    <div class="prose">
+    <div class:list={['prose', { 'magazine-prose': isMagazine }]}>
       <slot />
     </div>
   </article>
 </BaseLayout>
 
 <style>
+  .content-shell {
+    padding: 56px 0 96px;
+  }
+
+  .content-header {
+    max-width: 760px;
+    margin-bottom: 36px;
+  }
+
+  .content-header h1 {
+    font-size: clamp(2.2rem, 7vw, 5.5rem);
+    line-height: 0.96;
+    letter-spacing: 0;
+    margin: 0;
+  }
+
+  .content-description {
+    color: var(--muted);
+    font-size: 1.1rem;
+    line-height: 1.65;
+  }
+
+  .standard-kicker {
+    color: var(--green);
+    font-size: 12px;
+    margin: 0 0 14px;
+  }
+
+  .standard-date {
+    color: var(--warm);
+    font-size: 12px;
+  }
+
+  .content-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .content-tags span,
+  .magazine-meta span,
+  .magazine-meta time,
+  .magazine-rule span {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 4px 8px;
+    color: var(--muted);
+    font-size: 12px;
+    background: var(--surface);
+  }
+
+  .magazine-shell {
+    padding-top: clamp(38px, 7vw, 78px);
+  }
+
+  .magazine-header {
+    max-width: 1060px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(180px, 280px);
+    gap: clamp(16px, 4vw, 36px);
+    align-items: end;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .magazine-masthead {
+    display: contents;
+  }
+
+  .magazine-masthead > p {
+    grid-column: 1 / -1;
+    color: var(--green);
+    font-size: 12px;
+    margin: 0;
+  }
+
+  .magazine-header h1 {
+    max-width: 860px;
+    font-size: clamp(3rem, 9vw, 7.7rem);
+    line-height: 0.85;
+  }
+
+  .magazine-header .content-description {
+    grid-column: 1;
+    max-width: 660px;
+    margin: 0;
+    font-size: clamp(1.05rem, 1.8vw, 1.28rem);
+  }
+
+  .magazine-rule {
+    grid-column: 2;
+    grid-row: 2 / span 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+    align-content: flex-end;
+    min-height: 150px;
+  }
+
+  .magazine-rule span:first-child {
+    color: var(--warm);
+    border-color: var(--line-strong);
+  }
+
+  .magazine-meta {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .magazine-meta time {
+    color: var(--warm);
+  }
+
+  .magazine-prose {
+    max-width: 760px;
+    font-size: clamp(1.02rem, 1.6vw, 1.12rem);
+  }
+
+  .magazine-prose > p:first-child {
+    color: var(--text);
+    font-size: clamp(1.16rem, 2.3vw, 1.42rem);
+    line-height: 1.65;
+  }
+
+  .magazine-prose h2 {
+    margin-top: 2.1em;
+    padding-top: 0.65em;
+    border-top: 1px solid var(--line);
+  }
+
   .content-cover {
     border: 1px solid var(--line-strong);
     border-radius: 8px;
@@ -53,5 +215,22 @@ type Props = {
     width: 100%;
     aspect-ratio: 4 / 3;
     object-fit: cover;
+  }
+
+  @media (max-width: 720px) {
+    .content-shell {
+      padding-top: 42px;
+    }
+
+    .magazine-header {
+      grid-template-columns: 1fr;
+    }
+
+    .magazine-rule {
+      grid-column: 1;
+      grid-row: auto;
+      justify-content: flex-start;
+      min-height: 0;
+    }
   }
 </style>

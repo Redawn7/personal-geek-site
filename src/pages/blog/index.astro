@@ -1,31 +1,309 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import ContentCard from '../../components/ContentCard.astro';
 import { publishedNewestFirst } from '../../lib/content';
+import { formatDate } from '../../lib/dates';
 
 const posts = publishedNewestFirst(await getCollection('posts'));
+const leadPost = posts[0];
+const secondaryPosts = posts.slice(1);
+const categories = [...new Set(posts.map((entry) => entry.data.category))];
+const latestDate = leadPost ? formatDate(leadPost.data.date) : 'Collecting';
+const oldestDate = posts.at(-1) ? formatDate(posts.at(-1)!.data.date) : 'Soon';
+
+const issueNumber = (index: number) => String(posts.length - index).padStart(2, '0');
 ---
 
 <BaseLayout title="Blog" description="Essays, notes, and longer thoughts. 写长一点的想法。" path="/blog">
-  <section class="shell" style="padding: 48px 0 96px;">
-    <div style="margin-bottom: 24px;">
-      <p class="mono" style="color: var(--green); font-size: 12px; margin: 0 0 8px;">ROOM // BLOG 写作</p>
-      <h1 style="font-size: clamp(2rem, 5vw, 3.5rem); line-height: 0.96; margin: 0;">Blog</h1>
-      <p style="color: var(--muted); margin: 12px 0 0; font-size: 1rem;">{posts.length} post{posts.length !== 1 ? 's' : ''}. Longer thoughts, written slowly.</p>
+  <section class="shell blog-shell" aria-labelledby="blog-title">
+    <header class="blog-masthead">
+      <div class="masthead-copy">
+        <p class="mono">ROOM // BLOG 写作</p>
+        <h1 id="blog-title">Personal Magazine</h1>
+        <p>Longer thoughts, arranged like a small desk magazine. 慢慢写下旅行、学习和生活里的细节。</p>
+      </div>
+      <aside class="issue-card mono" aria-label="Blog issue summary">
+        <span>ISSUE // {latestDate}</span>
+        <strong>{String(posts.length).padStart(2, '0')}</strong>
+        <span>{posts.length === 1 ? 'published essay' : 'published essays'}</span>
+      </aside>
+    </header>
+
+    <div class="blog-rail mono" aria-label="Blog collection metadata">
+      <span>INDEX / {oldestDate} - {latestDate}</span>
+      <span>{categories.join(' / ') || 'Essays in progress'}</span>
+      <span>Simple English + 中文 notes</span>
     </div>
-    <div style="display: grid; gap: 12px; max-width: 760px;">
-      {posts.map((entry) => (
-        <ContentCard
-          href={`/blog/${entry.slug}`}
-          title={entry.data.title}
-          date={entry.data.date}
-          description={entry.data.description}
-        />
-      ))}
-      {posts.length === 0 && (
-        <p class="mono" style="color: var(--muted); font-size: 12px;">NO POSTS YET / 还没有文章</p>
-      )}
-    </div>
+
+    {leadPost ? (
+      <div class="editorial-grid">
+        <a href={`/blog/${leadPost.slug}`} class="lead-story">
+          <div class="story-kicker mono">
+            <span>NO. {issueNumber(0)}</span>
+            <span>{leadPost.data.category}</span>
+          </div>
+          <h2>{leadPost.data.title}</h2>
+          <p>{leadPost.data.description}</p>
+          <div class="story-footer mono">
+            <time datetime={leadPost.data.date.toISOString()}>{formatDate(leadPost.data.date)}</time>
+            <span>Read essay</span>
+          </div>
+        </a>
+
+        <div class="department-stack" aria-label="Blog departments">
+          {secondaryPosts.map((entry, index) => (
+            <a href={`/blog/${entry.slug}`} class="department-story">
+              <span class="story-number mono">NO. {issueNumber(index + 1)}</span>
+              <div>
+                <div class="story-kicker mono">
+                  <span>{entry.data.category}</span>
+                  <time datetime={entry.data.date.toISOString()}>{formatDate(entry.data.date)}</time>
+                </div>
+                <h2>{entry.data.title}</h2>
+                <p>{entry.data.description}</p>
+                <div class="tag-line mono">
+                  {entry.data.tags.slice(0, 3).map((tag) => <span>#{tag}</span>)}
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    ) : (
+      <p class="mono empty-blog">NO POSTS YET / 还没有文章</p>
+    )}
   </section>
 </BaseLayout>
+
+<style>
+  .blog-shell {
+    padding: clamp(36px, 6vw, 72px) 0 96px;
+  }
+
+  .blog-masthead {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(180px, 280px);
+    gap: clamp(18px, 4vw, 42px);
+    align-items: stretch;
+    margin-bottom: 16px;
+  }
+
+  .masthead-copy > p:first-child {
+    color: var(--green);
+    font-size: 12px;
+    margin: 0 0 10px;
+  }
+
+  .masthead-copy h1 {
+    max-width: 900px;
+    font-size: clamp(3.1rem, 10vw, 8.8rem);
+    line-height: 0.84;
+    letter-spacing: 0;
+    margin: 0;
+  }
+
+  .masthead-copy > p:last-child {
+    max-width: 640px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin: 18px 0 0;
+  }
+
+  .issue-card {
+    display: grid;
+    align-content: space-between;
+    min-height: 250px;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    padding: 16px;
+    background:
+      linear-gradient(135deg, color-mix(in oklch, var(--green) 10%, var(--paper)), var(--surface)),
+      var(--surface);
+    box-shadow: var(--shadow);
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .issue-card strong {
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 12vw, 8rem);
+    line-height: 0.82;
+    letter-spacing: 0;
+  }
+
+  .blog-rail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: space-between;
+    margin: 0 0 clamp(20px, 4vw, 36px);
+    padding-block: 14px;
+    border-block: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .blog-rail span,
+  .tag-line span {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--muted);
+    padding: 5px 8px;
+  }
+
+  .editorial-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.08fr) minmax(300px, 0.92fr);
+    gap: clamp(14px, 2.4vw, 22px);
+    align-items: start;
+  }
+
+  .lead-story,
+  .department-story {
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    background:
+      linear-gradient(180deg, color-mix(in oklch, var(--paper) 92%, var(--surface)), var(--paper)),
+      var(--paper);
+    color: var(--text);
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      transform 180ms ease;
+  }
+
+  .lead-story {
+    display: grid;
+    min-height: 500px;
+    align-content: end;
+    padding: clamp(18px, 4vw, 34px);
+    box-shadow: 0 1px 0 oklch(100% 0 0 / 0.54) inset;
+  }
+
+  .story-kicker,
+  .story-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+
+  .story-kicker span:first-child,
+  .story-footer span,
+  .story-number {
+    color: var(--warm);
+    font-weight: 800;
+  }
+
+  .lead-story h2 {
+    max-width: 760px;
+    font-size: clamp(2.35rem, 6vw, 5.2rem);
+    line-height: 0.9;
+    letter-spacing: 0;
+    margin: 18px 0;
+  }
+
+  .lead-story p {
+    max-width: 600px;
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.65;
+    margin: 0 0 30px;
+  }
+
+  .department-stack {
+    display: grid;
+    gap: 12px;
+  }
+
+  .department-story {
+    display: grid;
+    grid-template-columns: 74px minmax(0, 1fr);
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .department-story h2 {
+    font-size: clamp(1.25rem, 2.6vw, 1.85rem);
+    line-height: 1;
+    letter-spacing: 0;
+    margin: 8px 0;
+  }
+
+  .department-story p {
+    color: var(--muted);
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .tag-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 14px;
+    font-size: 11px;
+  }
+
+  .empty-blog {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  @media (hover: hover) {
+    .lead-story:hover,
+    .department-story:hover {
+      border-color: var(--warm);
+      box-shadow: 6px 6px 0 var(--line-strong);
+      transform: translate(-3px, -3px);
+    }
+  }
+
+  .lead-story:focus-visible,
+  .department-story:focus-visible {
+    outline: 2px solid var(--warm);
+    outline-offset: 3px;
+    border-color: var(--warm);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lead-story,
+    .department-story {
+      transition: none;
+    }
+
+    .lead-story:hover,
+    .department-story:hover {
+      transform: none;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .blog-masthead,
+    .editorial-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .issue-card {
+      min-height: 180px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .lead-story {
+      min-height: 380px;
+    }
+
+    .department-story {
+      grid-template-columns: 1fr;
+    }
+
+    .story-number {
+      display: inline-block;
+    }
+  }
+</style>

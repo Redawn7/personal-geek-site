@@ -1,27 +1,34 @@
 ---
 import { getCollection, render } from 'astro:content';
 import ContentLayout from '../../layouts/ContentLayout.astro';
-import { isPublished } from '../../lib/content';
+import { publishedNewestFirst } from '../../lib/content';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('posts');
+  const posts = publishedNewestFirst(await getCollection('posts'));
   return posts
-    .filter(isPublished)
-    .map((post) => ({
+    .map((post, index) => ({
       params: { slug: post.slug },
-      props: { post },
+      props: {
+        post,
+        issueNumber: String(posts.length - index).padStart(2, '0'),
+        totalPosts: posts.length,
+      },
     }));
 }
 
-const { post } = Astro.props;
+const { post, issueNumber, totalPosts } = Astro.props;
 const { Content } = await render(post);
 ---
 
 <ContentLayout
+  variant="magazine"
   title={post.data.title}
   description={post.data.description}
   date={post.data.date}
   tags={post.data.tags}
+  category={post.data.category}
+  issueNumber={issueNumber}
+  totalItems={totalPosts}
   path={`/blog/${post.slug}`}
   image={post.data.cover}
   imageAlt={post.data.title}
