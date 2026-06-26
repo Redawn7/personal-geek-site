@@ -5,38 +5,63 @@ import { publishedNewestFirst } from '../../lib/content';
 import { mediaUrl } from '../../lib/media';
 
 const life = publishedNewestFirst(await getCollection('life'));
+const featured = life.find((entry) => entry.data.photos[0]) ?? life[0];
+const locations = [...new Set(life.map((entry) => entry.data.location).filter(Boolean))];
 ---
 
 <BaseLayout title="Life" description="Daily memories, places, and moods. 生活记录。" path="/life">
-  <section class="shell life-shell">
-    <div class="life-hero ink-panel">
+  <section class="shell life-shell" aria-labelledby="life-title">
+    <div class="life-hero">
       <div>
-        <p class="mono">ROOM // LIFE 生活</p>
-        <h1>Life Notes</h1>
-        <p>Small memories from daily life: place, weather, mood, and a few quiet words. 记录普通日子里的小片段。</p>
+        <p class="mono">FILM ROLL // LIFE 生活</p>
+        <h1 id="life-title">Life Contact Sheet</h1>
+        <p>Small memories from daily life, arranged like quiet film frames. 普通日子的样片和坐标。</p>
       </div>
-      <div class="life-counter mono">
-        <strong>{life.length}</strong>
-        <span>life note{life.length !== 1 ? 's' : ''}</span>
+      <div class="life-hero-frame" aria-hidden={!featured?.data.photos[0]}>
+        {featured?.data.photos[0] ? (
+          <img src={mediaUrl(featured.data.photos[0])} alt="" loading="eager" />
+        ) : (
+          <span class="mono">NO IMAGE</span>
+        )}
+        <div class="frame-readout mono">
+          <span>{life.length} frames</span>
+          <span>{locations.length} place{locations.length === 1 ? '' : 's'}</span>
+        </div>
       </div>
     </div>
 
-    <div class="life-timeline">
-      {life.map((entry) => {
+    <div class="life-rail mono" aria-label="Life collection summary">
+      <span>INDEX / 2026</span>
+      <span>{locations.join(' / ') || 'Collecting places'}</span>
+      <span>AI film stills + short notes</span>
+    </div>
+
+    <div class="contact-sheet">
+      {life.map((entry, index) => {
         const photo = entry.data.photos[0];
+        const frameNumber = String(index + 1).padStart(2, '0');
         return (
-          <a href={`/life/${entry.slug}`} class="life-entry ink-panel">
-            <div class="life-thumb" aria-hidden={!photo}>
-              {photo ? <img src={mediaUrl(photo)} alt="" loading="lazy" /> : <span class="mono">{entry.data.type}</span>}
+          <a href={`/life/${entry.slug}`} class="film-frame" style={`--frame-shift: ${index % 3};`}>
+            <div class="film-meta mono" aria-hidden="true">
+              <span>FRAME {frameNumber}</span>
+              <span>{entry.data.type.toUpperCase()}</span>
             </div>
-            <div class="life-entry-meta mono">
-              <span>{entry.data.type}</span>
-              <time datetime={entry.data.date.toISOString()}>{entry.data.date.toLocaleDateString('en', { month: 'short', day: '2-digit', year: 'numeric' })}</time>
+            <div class="frame-image">
+              {photo ? (
+                <img src={mediaUrl(photo)} alt={entry.data.title} loading={index < 2 ? 'eager' : 'lazy'} />
+              ) : (
+                <span class="mono">TEXT FRAME</span>
+              )}
+              <span class="frame-corner mono">{entry.data.location ?? 'Unknown'}</span>
             </div>
-            <div>
+            <div class="frame-copy">
+              <div class="frame-date mono">
+                <span>{frameNumber}</span>
+                <time datetime={entry.data.date.toISOString()}>{entry.data.date.toLocaleDateString('en', { month: 'short', day: '2-digit', year: 'numeric' })}</time>
+              </div>
               <h2>{entry.data.title}</h2>
               <p>{entry.data.description ?? entry.data.location}</p>
-              <div class="life-tags mono">
+              <div class="frame-tags mono">
                 {entry.data.location && <span>{entry.data.location}</span>}
                 {entry.data.weather && <span>{entry.data.weather}</span>}
                 {entry.data.mood && <span>{entry.data.mood}</span>}
@@ -54,19 +79,15 @@ const life = publishedNewestFirst(await getCollection('life'));
 
 <style>
   .life-shell {
-    padding: 48px 0 96px;
+    padding: clamp(36px, 6vw, 72px) 0 96px;
   }
 
   .life-hero {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 160px;
-    gap: 24px;
-    align-items: end;
-    padding: clamp(22px, 4vw, 42px);
-    margin-bottom: 18px;
-    background:
-      linear-gradient(135deg, color-mix(in oklch, var(--warm) 16%, var(--paper)), var(--paper) 58%),
-      var(--paper);
+    grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.72fr);
+    gap: clamp(18px, 4vw, 42px);
+    align-items: stretch;
+    margin-bottom: 16px;
   }
 
   .life-hero p:first-child {
@@ -76,8 +97,9 @@ const life = publishedNewestFirst(await getCollection('life'));
   }
 
   .life-hero h1 {
-    font-size: clamp(2.4rem, 6vw, 5rem);
-    line-height: 0.9;
+    max-width: 760px;
+    font-size: clamp(3.2rem, 11vw, 9.6rem);
+    line-height: 0.82;
     letter-spacing: 0;
     margin: 0;
   }
@@ -89,102 +111,204 @@ const life = publishedNewestFirst(await getCollection('life'));
     line-height: 1.7;
   }
 
-  .life-counter {
+  .life-hero-frame {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 340px;
     border: 1px solid var(--line-strong);
     border-radius: 8px;
-    background: var(--surface);
-    padding: 14px;
-    text-align: right;
+    overflow: hidden;
+    background:
+      linear-gradient(135deg, color-mix(in oklch, var(--warm) 12%, var(--paper)), var(--surface)),
+      var(--surface);
+    box-shadow: var(--shadow);
   }
 
-  .life-counter strong {
+  .life-hero-frame img {
     display: block;
-    font-size: 3rem;
-    line-height: 0.9;
+    width: 100%;
+    height: 100%;
+    min-height: 340px;
+    object-fit: cover;
+    filter: saturate(0.86) contrast(1.03);
   }
 
-  .life-counter span {
+  .life-hero-frame::after {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    content: "";
+    background:
+      linear-gradient(180deg, transparent 62%, oklch(14% 0.02 70 / 0.72)),
+      repeating-linear-gradient(90deg, oklch(100% 0 0 / 0.08), oklch(100% 0 0 / 0.08) 1px, transparent 1px, transparent 7px);
+    mix-blend-mode: multiply;
+  }
+
+  .frame-readout {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    z-index: 1;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: end;
+  }
+
+  .frame-readout span,
+  .life-rail span,
+  .frame-tags span {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: color-mix(in oklch, var(--paper) 86%, transparent);
     color: var(--muted);
+    padding: 5px 8px;
+  }
+
+  .frame-readout span {
+    border-color: oklch(92% 0.02 88 / 0.42);
+    background: oklch(14% 0.02 70 / 0.64);
+    color: oklch(96% 0.018 88);
     font-size: 12px;
   }
 
-  .life-timeline {
-    display: grid;
-    gap: 12px;
-    max-width: 900px;
-  }
-
-  .life-entry {
-    display: grid;
-    grid-template-columns: 156px 128px minmax(0, 1fr);
-    gap: 20px;
-    align-items: center;
-    padding: 18px;
-  }
-
-  .life-thumb {
-    display: grid;
-    place-items: center;
-    aspect-ratio: 4 / 3;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    overflow: hidden;
-    background: var(--surface-2);
+  .life-rail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: space-between;
+    margin: 0 0 clamp(20px, 4vw, 36px);
+    padding-block: 14px;
+    border-block: 1px solid var(--line);
     color: var(--muted);
     font-size: 11px;
   }
 
-  .life-thumb img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  .life-rail span {
+    background: var(--surface);
   }
 
-  .life-entry:hover {
-    box-shadow: 5px 5px 0 var(--line-strong);
-    transform: translate(-2px, -2px);
-  }
-
-  .life-entry-meta {
+  .contact-sheet {
     display: grid;
-    align-content: start;
-    gap: 8px;
-    color: var(--muted);
-    font-size: 12px;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: clamp(12px, 2vw, 18px);
   }
 
-  .life-entry-meta span {
+  .film-frame {
+    grid-column: span 4;
+    display: grid;
+    gap: 10px;
+    border-radius: 8px;
+    padding: 10px;
+    background:
+      linear-gradient(180deg, color-mix(in oklch, var(--paper) 92%, var(--surface)), var(--paper)),
+      var(--paper);
+    border: 1px solid var(--line-strong);
+    box-shadow: 0 1px 0 oklch(100% 0 0 / 0.54) inset;
+    transform: translateY(calc(var(--frame-shift) * 6px));
+    transition:
+      transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 240ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .film-frame:nth-child(1),
+  .film-frame:nth-child(6n) {
+    grid-column: span 6;
+  }
+
+  .film-meta,
+  .frame-date {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .film-meta span:first-child,
+  .frame-date span {
     color: var(--warm);
     font-weight: 800;
   }
 
-  .life-entry h2 {
-    margin: 0;
-    font-size: clamp(1.25rem, 3vw, 2rem);
-    line-height: 1.05;
+  .frame-image {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--surface-2);
+    color: var(--muted);
   }
 
-  .life-entry p {
+  .frame-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.88) contrast(1.05);
+    transition:
+      transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .frame-image::after {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    content: "";
+    background:
+      linear-gradient(180deg, transparent 58%, oklch(12% 0.02 72 / 0.5)),
+      repeating-linear-gradient(0deg, oklch(100% 0 0 / 0.06), oklch(100% 0 0 / 0.06) 1px, transparent 1px, transparent 9px);
+    opacity: 0.52;
+  }
+
+  .frame-corner {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    z-index: 1;
+    border: 1px solid oklch(92% 0.02 88 / 0.42);
+    border-radius: 999px;
+    background: oklch(14% 0.02 70 / 0.62);
+    color: oklch(96% 0.018 88);
+    font-size: 10px;
+    padding: 4px 7px;
+  }
+
+  .frame-copy {
+    display: grid;
+    gap: 8px;
+    padding: 2px 2px 4px;
+  }
+
+  .frame-copy h2 {
+    margin: 0;
+    font-size: clamp(1.35rem, 2.8vw, 2.2rem);
+    line-height: 0.98;
+  }
+
+  .frame-copy p {
     color: var(--muted);
-    margin: 8px 0 0;
+    margin: 0;
     line-height: 1.6;
   }
 
-  .life-tags {
+  .frame-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 7px;
-    margin-top: 14px;
+    margin-top: 4px;
   }
 
-  .life-tags span {
-    border: 1px solid var(--line);
-    border-radius: 999px;
+  .frame-tags span {
     background: var(--surface);
-    color: var(--muted);
     font-size: 11px;
-    padding: 5px 8px;
   }
 
   .empty-life {
@@ -192,14 +316,70 @@ const life = publishedNewestFirst(await getCollection('life'));
     font-size: 12px;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    .film-frame,
+    .frame-image img {
+      transition: none;
+    }
+
+    .film-frame,
+    .film-frame:hover {
+      transform: none;
+      box-shadow: 0 1px 0 oklch(100% 0 0 / 0.54) inset;
+    }
+
+    .film-frame:hover .frame-image img {
+      transform: none;
+      filter: saturate(0.88) contrast(1.05);
+    }
+  }
+
+  @media (hover: hover) {
+    .film-frame:hover {
+      border-color: var(--warm);
+      box-shadow: 6px 6px 0 var(--line-strong);
+      transform: translate(-3px, calc((var(--frame-shift) * 6px) - 3px));
+    }
+
+    .film-frame:hover .frame-image img {
+      transform: scale(1.035);
+      filter: saturate(0.98) contrast(1.08);
+    }
+  }
+
+  .film-frame:focus-visible {
+    outline: 2px solid var(--warm);
+    outline-offset: 3px;
+    border-color: var(--warm);
+  }
+
+  @media (max-width: 980px) {
+    .film-frame,
+    .film-frame:nth-child(1),
+    .film-frame:nth-child(6n) {
+      grid-column: span 6;
+    }
+  }
+
   @media (max-width: 720px) {
-    .life-hero,
-    .life-entry {
+    .life-hero {
       grid-template-columns: 1fr;
     }
 
-    .life-counter {
-      text-align: left;
+    .life-hero-frame,
+    .life-hero-frame img {
+      min-height: 260px;
+    }
+
+    .contact-sheet {
+      grid-template-columns: 1fr;
+    }
+
+    .film-frame,
+    .film-frame:nth-child(1),
+    .film-frame:nth-child(6n) {
+      grid-column: 1;
+      transform: none;
     }
   }
 </style>
