@@ -8,67 +8,162 @@ import NowDashboard from '../components/NowDashboard.astro';
 import LifePostcards from '../components/LifePostcards.astro';
 import FeaturedProject from '../components/FeaturedProject.astro';
 import { publishedNewestFirst } from '../lib/content';
+import { formatDate } from '../lib/dates';
 import { selectFeaturedProject, selectLifePostcards } from '../lib/home';
 
 const allPosts = publishedNewestFirst(await getCollection('posts'));
 const allNotes = publishedNewestFirst(await getCollection('notes'));
-const allLife = await getCollection('life');
-const allLab = await getCollection('lab');
-const posts = allPosts.slice(0, 1);
-const notes = allNotes.slice(0, 1);
+const allLife = publishedNewestFirst(await getCollection('life'));
+const allLab = publishedNewestFirst(await getCollection('lab'));
 const life = selectLifePostcards(allLife);
 const featuredProject = selectFeaturedProject(allLab);
 const [nowEntry] = await getCollection('now');
-const latest = [...posts, ...notes, ...life.slice(0, 1), ...(featuredProject ? [featuredProject] : [])];
+const totalSignals = allPosts.length + allNotes.length + allLife.length + allLab.length;
+
+const latestSignals = [
+  ...allPosts.slice(0, 2).map((entry) => ({
+    href: `/blog/${entry.slug}`,
+    label: 'Blog 写作',
+    title: entry.data.title,
+    description: entry.data.description,
+    date: entry.data.date
+  })),
+  ...allNotes.slice(0, 2).map((entry) => ({
+    href: `/notes/${entry.slug}`,
+    label: 'Note 笔记',
+    title: entry.data.title,
+    description: entry.data.description ?? 'A note that is still growing.',
+    date: entry.data.date
+  })),
+  ...allLife.slice(0, 2).map((entry) => ({
+    href: `/life/${entry.slug}`,
+    label: 'Life 生活',
+    title: entry.data.title,
+    description: entry.data.description ?? entry.data.location ?? 'A small moment worth keeping.',
+    date: entry.data.date
+  })),
+  ...allLab.slice(0, 1).map((entry) => ({
+    href: `/lab/${entry.slug}`,
+    label: 'Lab 实验',
+    title: entry.data.title,
+    description: entry.data.description ?? 'A small project built to learn something useful.',
+    date: entry.data.date
+  }))
+].sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 6);
+
+const routeCards = [
+  { href: '/blog', label: 'Blog 写作', value: allPosts.length, detail: 'Essays and longer thoughts' },
+  { href: '/life', label: 'Life 生活', value: allLife.length, detail: 'Photos, places, ordinary days' },
+  { href: '/notes', label: 'Notes 笔记', value: allNotes.length, detail: 'Ideas before they become essays' },
+  { href: '/lab', label: 'Lab 实验', value: allLab.length, detail: 'Small builds and tools' }
+];
 ---
 
-<BaseLayout title="Lux Personal OS" description="A simple personal site for writing, life, notes, and small projects. 记录生活，也记录想法。">
+<BaseLayout title="Lux Personal OS" description="A personal control room for writing, life, notes, and small projects. 记录生活，也记录想法。">
   <CommandPalette />
   <section class="shell home-shell">
-    <div class="hero-grid">
-      <div class="ink-panel hero-console">
-        <div class="status-row">
-          <span class="mono signal-pill">TODAY'S DESK</span>
-          <span class="mono">PRESS CMD+K</span>
-          <span class="mono" data-theme-status>PAPER MODE</span>
-        </div>
-        <h1 class="hero-title">My place to write, build, and remember.</h1>
-        <p class="hero-copy">I keep essays, life notes, ideas, and small projects here. 这里记录生活，也记录好奇心。</p>
-        <div class="console-strip mono" aria-label="System counters">
-          <span>{allPosts.length} published post</span>
-          <span>{allNotes.length} open note</span>
-          <span>{life.length} life postcard</span>
-          <span>{allLab.length} small build</span>
+    <header class="home-hero" aria-labelledby="home-title">
+      <div class="hero-copy">
+        <p class="mono">LUX PERSONAL OS // 个人系统</p>
+        <h1 id="home-title">Writing, life, notes, and small experiments.</h1>
+        <p>
+          Essays, small memories, notes, and builds live here together.
+          这里像一张会生长的桌面，放下生活、想法和一点点实验精神。
+        </p>
+        <div class="hero-actions mono" aria-label="Primary homepage actions">
+          <a href="/blog">Read Blog</a>
+          <a href="/life">Open Life Atlas</a>
+          <a href="/search">Search Site</a>
         </div>
       </div>
+
+      <aside class="system-panel" aria-label="Personal OS status">
+        <div class="system-topline mono">
+          <span class="signal-pill">LIVE DESK</span>
+          <span data-theme-status>PAPER MODE</span>
+        </div>
+        <div class="system-dial" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+          <strong>{String(totalSignals).padStart(2, '0')}</strong>
+        </div>
+        <div class="system-caption mono">
+          <span>Signals saved</span>
+          <span>Press Cmd+K</span>
+        </div>
+      </aside>
+    </header>
+
+    <nav class="route-deck" aria-label="Site sections">
+      {routeCards.map((route) => (
+        <a href={route.href} class="route-card">
+          <span class="mono">{route.label}</span>
+          <strong>{String(route.value).padStart(2, '0')}</strong>
+          <p>{route.detail}</p>
+        </a>
+      ))}
+    </nav>
+
+    <section class="signal-tape" aria-labelledby="signal-tape-title">
+      <div class="section-head">
+        <p class="mono" id="signal-tape-title">RECENT SIGNALS / 最近信号</p>
+        <a class="mono" href="/archive">FULL ARCHIVE</a>
+      </div>
+      <div class="tape-grid">
+        {latestSignals.slice(0, 4).map((entry, index) => (
+          <a href={entry.href} class="tape-item" style={`--i: ${index}`}>
+            <span class="mono">{entry.label}</span>
+            <strong>{entry.title}</strong>
+            <time class="mono" datetime={entry.date.toISOString()}>{formatDate(entry.date)}</time>
+          </a>
+        ))}
+        {latestSignals.length === 0 && <p class="mono tape-empty">Signals are being collected / 信号整理中</p>}
+      </div>
+    </section>
+
+    <div class="dashboard-grid">
+      {nowEntry ? (
+        <NowDashboard {...nowEntry.data} />
+      ) : (
+        <section class="ink-panel now-empty mono">Status update in progress / 近况整理中</section>
+      )}
+
+      <section class="ink-panel field-note" aria-labelledby="field-note-title">
+        <p class="mono">FIELD NOTE / 桌面便签</p>
+        <h2 id="field-note-title">Keep the site alive by adding one honest signal.</h2>
+        <p>Write one post, save one photo, or ship one tiny tool. 小网站会因为真实记录而变得有生命。</p>
+        <a class="mono" href="/about">ABOUT THIS SITE</a>
+      </section>
     </div>
-
-    {nowEntry ? (
-      <NowDashboard {...nowEntry.data} />
-    ) : (
-      <section class="ink-panel now-empty mono">Status update in progress / 近况整理中</section>
-    )}
-
-    <LifePostcards entries={life} />
-    <FeaturedProject project={featuredProject} />
 
     <div class="module-grid">
       <ModuleLauncher />
       <SignalGraph />
     </div>
 
-    <section class="ink-panel latest-panel">
+    <LifePostcards entries={life} />
+    <FeaturedProject project={featuredProject} />
+
+    <section class="ink-panel latest-panel" aria-labelledby="latest-title">
       <div class="section-head">
-        <p class="mono">LATEST UPDATES / 最近更新</p>
+        <p class="mono" id="latest-title">SYSTEM LOG / 系统日志</p>
         <a class="mono" href="/archive">ALL POSTS</a>
       </div>
       <div class="latest-grid">
-        {latest.map((entry) => (
-          <a href={`/${entry.collection === 'posts' ? 'blog' : entry.collection}/${entry.slug}`} class="signal-card">
-            <span class="mono">{entry.collection}</span>
-            <strong>{entry.data.title}</strong>
+        {latestSignals.map((entry) => (
+          <a href={entry.href} class="signal-card">
+            <span class="mono">{entry.label}</span>
+            <div>
+              <strong>{entry.title}</strong>
+              <p>{entry.description}</p>
+            </div>
+            <time class="mono" datetime={entry.date.toISOString()}>{formatDate(entry.date)}</time>
           </a>
         ))}
+        {latestSignals.length === 0 && (
+          <p class="mono latest-empty">No updates yet / 还没有更新</p>
+        )}
       </div>
     </section>
   </section>
@@ -76,106 +171,202 @@ const latest = [...posts, ...notes, ...life.slice(0, 1), ...(featuredProject ? [
 
 <style>
   .home-shell {
-    padding: 42px 0 96px;
+    padding: clamp(36px, 6vw, 76px) 0 96px;
   }
 
-  .hero-grid {
+  .home-hero {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
+    gap: clamp(18px, 4vw, 34px);
+    align-items: stretch;
+    min-height: clamp(460px, 66vh, 680px);
+    margin-bottom: 16px;
   }
 
-  .hero-console {
-    min-height: 360px;
-    padding: clamp(22px, 4vw, 46px);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero-console::after {
-    content: "";
-    position: absolute;
-    inset: auto -10% -22% 36%;
-    height: 190px;
+  .hero-copy,
+  .system-panel,
+  .signal-tape,
+  .field-note {
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
     background:
-      linear-gradient(90deg, transparent 0 18px, oklch(74% 0.05 79 / 0.32) 18px 19px, transparent 19px 36px),
-      linear-gradient(0deg, transparent 0 18px, oklch(74% 0.05 79 / 0.32) 18px 19px, transparent 19px 36px);
-    opacity: 0.8;
-    transform: rotate(-4deg);
-  }
-
-  .status-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    align-items: center;
-    margin-bottom: 24px;
-    color: var(--muted);
-    font-size: 12px;
-  }
-
-  .status-row > span:not(.signal-pill) {
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    background: var(--surface);
-    padding: 6px 10px;
-  }
-
-  .hero-title {
-    font-size: clamp(2rem, 7vw, 5.5rem);
-    line-height: 0.92;
-    letter-spacing: 0;
-    margin: 0;
-    max-width: 900px;
-    position: relative;
-    z-index: 1;
+      linear-gradient(135deg, color-mix(in oklch, var(--paper) 88%, var(--surface)), transparent),
+      var(--paper);
+    box-shadow: var(--shadow);
   }
 
   .hero-copy {
-    color: var(--muted);
-    max-width: 680px;
-    font-size: 1.1rem;
-    line-height: 1.65;
-    margin-top: 24px;
-    position: relative;
-    z-index: 1;
-  }
-
-  .console-strip {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 8px;
-    margin-top: 34px;
+    align-content: end;
+    position: relative;
+    overflow: hidden;
+    padding: clamp(22px, 5vw, 48px);
+  }
+
+  .hero-copy::before {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, transparent 0 39px, var(--line) 39px 40px, transparent 40px),
+      linear-gradient(0deg, transparent 0 39px, var(--line) 39px 40px, transparent 40px);
+    background-size: 40px 40px;
+    mask-image: linear-gradient(135deg, transparent 0%, black 12%, black 48%, transparent 78%);
+    opacity: 0.5;
+  }
+
+  .hero-copy > * {
     position: relative;
     z-index: 1;
   }
 
-  .console-strip span {
-    border-top: 1px solid var(--line-strong);
+  .hero-copy > p:first-child,
+  .section-head p,
+  .field-note > p:first-child {
+    color: var(--green);
+    font-size: 12px;
+    margin: 0;
+  }
+
+  .hero-copy h1 {
+    max-width: 930px;
+    font-size: clamp(3.2rem, 8vw, 7rem);
+    line-height: 0.84;
+    letter-spacing: 0;
+    margin: 18px 0;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-copy > p:not(:first-child) {
+    max-width: 720px;
+    color: var(--muted);
+    font-size: clamp(1.02rem, 1.7vw, 1.2rem);
+    line-height: 1.72;
+    margin: 0;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 30px;
+    font-size: 11px;
+  }
+
+  .hero-actions a,
+  .section-head a,
+  .field-note a {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text);
+    padding: 7px 10px;
+  }
+
+  .system-panel {
+    display: grid;
+    align-content: space-between;
+    min-height: 100%;
+    padding: 16px;
+    overflow: hidden;
+  }
+
+  .system-topline,
+  .system-caption {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
     color: var(--muted);
     font-size: 11px;
-    padding-top: 9px;
   }
 
-  .module-grid {
+  .system-topline > span:not(.signal-pill),
+  .system-caption span {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    padding: 6px 9px;
+  }
+
+  .system-dial {
+    position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(260px, .6fr);
-    gap: 16px;
-    margin-top: 16px;
+    place-items: center;
+    aspect-ratio: 1;
+    margin: clamp(22px, 5vw, 44px) 0;
+    color: var(--text);
   }
 
-  .now-empty,
-  :global(.now-dashboard) {
-    margin-top: 16px;
+  .system-dial span {
+    position: absolute;
+    inset: calc(var(--ring) * 15px);
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
   }
 
-  .now-empty {
+  .system-dial span:nth-child(1) {
+    --ring: 0;
+  }
+
+  .system-dial span:nth-child(2) {
+    --ring: 1;
+    border-style: dashed;
+  }
+
+  .system-dial span:nth-child(3) {
+    --ring: 2;
+    border-color: var(--line);
+  }
+
+  .system-dial strong {
+    font-size: clamp(4.5rem, 12vw, 8.2rem);
+    line-height: 0.82;
+    letter-spacing: 0;
+  }
+
+  .route-deck {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .route-card {
+    display: grid;
+    min-height: 150px;
+    align-content: space-between;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    padding: 14px;
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      transform 180ms ease;
+  }
+
+  .route-card span {
+    color: var(--warm);
+    font-size: 11px;
+  }
+
+  .route-card strong {
+    font-size: clamp(2.8rem, 7vw, 5rem);
+    line-height: 0.86;
+    letter-spacing: 0;
+  }
+
+  .route-card p {
     color: var(--muted);
-    padding: 22px;
+    line-height: 1.45;
+    margin: 0;
   }
 
-  .latest-panel {
+  .signal-tape {
     padding: 16px;
-    margin-top: 16px;
+    margin-bottom: 16px;
   }
 
   .section-head {
@@ -186,15 +377,99 @@ const latest = [...posts, ...notes, ...life.slice(0, 1), ...(featuredProject ? [
     margin-bottom: 12px;
   }
 
-  .section-head p,
   .section-head a {
     color: var(--muted);
-    font-size: 12px;
-    margin: 0;
+    font-size: 11px;
   }
 
-  .section-head p {
-    color: var(--green);
+  .tape-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .tape-item {
+    display: grid;
+    align-content: space-between;
+    min-height: 178px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background:
+      linear-gradient(180deg, color-mix(in oklch, var(--surface) 92%, var(--paper)), var(--surface)),
+      var(--surface);
+    color: var(--text);
+    padding: 14px;
+    transform: translateY(calc(var(--i) * 4px));
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      transform 180ms ease;
+  }
+
+  .tape-item span,
+  .tape-item time {
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .tape-item strong {
+    font-size: clamp(1.1rem, 2.1vw, 1.55rem);
+    line-height: 1;
+    overflow-wrap: anywhere;
+  }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.18fr) minmax(260px, 0.82fr);
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .now-empty,
+  :global(.now-dashboard) {
+    min-height: 100%;
+  }
+
+  .now-empty {
+    color: var(--muted);
+    padding: 22px;
+  }
+
+  .field-note {
+    display: grid;
+    align-content: end;
+    padding: clamp(18px, 3vw, 28px);
+  }
+
+  .field-note h2 {
+    font-size: clamp(1.55rem, 3.2vw, 2.65rem);
+    line-height: 0.98;
+    letter-spacing: 0;
+    margin: 14px 0;
+  }
+
+  .field-note p:not(:first-child) {
+    color: var(--muted);
+    line-height: 1.62;
+    margin: 0 0 18px;
+  }
+
+  .field-note a {
+    justify-self: start;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .module-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.6fr);
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .latest-panel {
+    padding: 16px;
+    margin-top: 16px;
   }
 
   .latest-grid {
@@ -204,39 +479,153 @@ const latest = [...posts, ...notes, ...life.slice(0, 1), ...(featuredProject ? [
 
   .signal-card {
     display: grid;
-    grid-template-columns: 96px minmax(0, 1fr);
+    grid-template-columns: 96px minmax(0, 1fr) auto;
     gap: 12px;
     align-items: center;
     border: 1px solid var(--line);
     border-radius: 8px;
     background: var(--surface);
+    color: var(--text);
     padding: 14px;
+    transition:
+      border-color 180ms ease,
+      box-shadow 180ms ease,
+      transform 180ms ease;
   }
 
-  .signal-card:hover {
-    border-color: var(--line-strong);
-    box-shadow: 5px 5px 0 var(--line-strong);
-    transform: translate(-2px, -2px);
-  }
-
-  .signal-card span {
+  .signal-card > span {
     color: var(--warm);
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .signal-card strong {
     display: block;
   }
 
-  @media (max-width: 768px) {
-    .hero-grid,
+  .signal-card p {
+    color: var(--muted);
+    line-height: 1.45;
+    margin: 5px 0 0;
+  }
+
+  .signal-card time {
+    color: var(--muted);
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .latest-empty,
+  .tape-empty {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  @media (hover: hover) {
+    .hero-actions a:hover,
+    .section-head a:hover,
+    .field-note a:hover,
+    .route-card:hover,
+    .tape-item:hover,
+    .signal-card:hover {
+      border-color: var(--warm);
+      box-shadow: 5px 5px 0 var(--line-strong);
+      transform: translate(-2px, -2px);
+    }
+
+    .tape-item:hover {
+      transform: translate(-2px, calc(var(--i) * 4px - 2px));
+    }
+  }
+
+  .hero-actions a:focus-visible,
+  .section-head a:focus-visible,
+  .field-note a:focus-visible,
+  .route-card:focus-visible,
+  .tape-item:focus-visible,
+  .signal-card:focus-visible {
+    outline: 2px solid var(--warm);
+    outline-offset: 3px;
+    border-color: var(--warm);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .route-card,
+    .tape-item,
+    .signal-card,
+    .hero-actions a,
+    .section-head a,
+    .field-note a {
+      transition: none;
+    }
+
+    .tape-item,
+    .route-card:hover,
+    .tape-item:hover,
+    .signal-card:hover,
+    .hero-actions a:hover,
+    .section-head a:hover,
+    .field-note a:hover {
+      transform: none;
+    }
+  }
+
+  @media (max-width: 920px) {
+    .home-hero,
+    .dashboard-grid,
     .module-grid {
       grid-template-columns: 1fr;
     }
 
-    .console-strip,
+    .home-hero {
+      min-height: 0;
+    }
+
+    .system-panel {
+      min-height: 280px;
+    }
+
+    .route-deck,
+    .tape-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 560px) {
+    .home-shell {
+      width: min(100% - 24px, 1180px);
+      padding-top: 30px;
+    }
+
+    .hero-copy h1 {
+      font-size: clamp(2.85rem, 14vw, 3.85rem);
+      line-height: 0.88;
+    }
+
+    .route-deck,
+    .tape-grid,
     .signal-card {
       grid-template-columns: 1fr;
+    }
+
+    .system-topline,
+    .system-caption,
+    .section-head {
+      align-items: start;
+      display: grid;
+      justify-content: stretch;
+    }
+
+    .route-card {
+      min-height: 132px;
+    }
+
+    .tape-item {
+      min-height: 148px;
+      transform: none;
+    }
+
+    .signal-card time {
+      white-space: normal;
     }
   }
 </style>
